@@ -628,9 +628,11 @@ window.placeOrder = async function() {
 };
 
 function showSuccess() {
-  const modal = document.getElementById('cartModal');
-  modal.classList.add('open');
-  modal.querySelector('.modal').innerHTML = `
+  const overlay = document.getElementById('cartModal');
+  const modal = overlay.querySelector('.modal');
+  if (!modal) return;
+  overlay.classList.add('open');
+  modal.innerHTML = `
     <div class="success-msg">
       <div class="icon">✅</div>
       <h3>Order Placed!</h3>
