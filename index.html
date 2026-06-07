@@ -424,6 +424,10 @@ let tableNum = 1;
 // Get table from URL
 const params = new URLSearchParams(window.location.search);
 tableNum = params.get('table') || '1';
+ // 결제 완료 후 처리
+if (params.get('payment') === 'success') {
+  setTimeout(() => showSuccess(), 500);
+}
 document.getElementById('tableLabel').textContent = `Table ${tableNum}`;
 
 // Build tabs & menu
