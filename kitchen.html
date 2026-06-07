@@ -281,10 +281,9 @@ onValue(ordersRef, snap => {
   render();
 });
  
-function filterItems(items) {
-  if (currentSection === 'ALL') return items;
-  const ids = SECTION_ITEMS[currentSection] || [];
-  return items.filter(i => ids.includes(i.id));
+function filterSection(order) {
+  if (currentSection === 'ALL') return true;
+  return order.section === currentSection;
 }
 
 function render() {
@@ -292,8 +291,7 @@ function render() {
   const cols = { NEW: [], PREPARING: [], DONE: [] };
 
   Object.entries(allOrders).forEach(([key, order]) => {
-    const filtered = filterItems(order.items || []);
-    if (currentSection !== 'ALL' && filtered.length === 0) return;
+    if (!filterSection(order)) return;
     if (!['NEW','PREPARING','DONE'].includes(order.status)) return;
     cols[order.status].push({ key, order, filtered });
   });
@@ -352,11 +350,11 @@ card.innerHTML = `
 setInterval(() => render(), 5000);
 
 window.updateStatus = async function(key, newStatus) {
-  await update(ref(db, `orders/${key}`), { status: newStatus });
+  await update(ref(db, `orderItems/${key}`), { status: newStatus });
 };
 
 window.clearOrder = async function(key) {
-  await remove(ref(db, `orders/${key}`));
+  await remove(ref(db, `orderItems/${key}`));
 };
 </script>
 </body>
