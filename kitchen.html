@@ -321,9 +321,11 @@ function render() {
       } else if (order.status === 'PREPARING') {
         actionBtn = `<button class="action-btn btn-done" onclick="updateStatus('${key}', 'DONE')">✓ DONE</button>`;
       } else {
-        actionBtn = `<button class="action-btn btn-clear" onclick="clearOrder('${key}')">✕ CLEAR</button>`;
+        actionBtn = `
+          <button class="action-btn btn-done" style="margin-bottom:6px" onclick="updateStatus('${key}', 'PREPARING')">↩ RECALL</button>
+          <button class="action-btn btn-clear" onclick="clearOrder('${key}')">✕ CLEAR</button>
+        `;
       }
-
       const timerClass = getTimerClass(elapsed);
       const timerStr = formatTimer(elapsed);
 
