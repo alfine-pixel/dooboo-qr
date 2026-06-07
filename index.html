@@ -440,6 +440,7 @@ tableNum = params.get('table') || '1';
  // 결제 완료 후 처리
 if (params.get('payment') === 'success') {
   setTimeout(() => showSuccess(), 500);
+  window.history.replaceState({}, '', `/?table=${tableNum}`);
 }
 document.getElementById('tableLabel').textContent = `Table ${tableNum}`;
 
