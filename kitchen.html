@@ -294,7 +294,7 @@ function render() {
   Object.entries(allOrders).forEach(([key, order]) => {
     const filtered = filterItems(order.items || []);
     if (currentSection !== 'ALL' && filtered.length === 0) return;
-    cols[order.status] = cols[order.status] || [];
+    if (!['NEW','PREPARING','DONE'].includes(order.status)) return;
     cols[order.status].push({ key, order, filtered });
   });
 
