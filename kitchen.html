@@ -293,7 +293,7 @@ function render() {
   Object.entries(allOrders).forEach(([key, order]) => {
     if (!filterSection(order)) return;
     if (!['NEW','PREPARING','DONE'].includes(order.status)) return;
-    cols[order.status].push({ key, order, filtered });
+    cols[order.status].push({ key, order });
   });
 
   ['NEW','PREPARING','DONE'].forEach(status => {
