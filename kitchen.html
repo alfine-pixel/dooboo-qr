@@ -317,16 +317,6 @@ function render() {
       const card = document.createElement('div');
       card.className = `order-card status-${order.status}`;
 
-      const items = (currentSection === 'ALL' ? order.items : filtered) || [];
-      const itemsHtml = items.map(item => {
-        const opts = Object.entries(item.options || {}).map(([k,v]) => `${k}: ${v}`).join(', ');
-        return `<div class="order-item">
-          <span class="item-qty">${item.qty}×</span>${item.name}
-          ${opts ? `<div class="item-sub">${opts}</div>` : ''}
-          ${item.note ? `<div class="item-sub">📝 ${item.note}</div>` : ''}
-        </div>`;
-      }).join('');
-
       let actionBtn = '';
       if (order.status === 'NEW') {
         actionBtn = `<button class="action-btn btn-start" onclick="updateStatus('${key}', 'PREPARING')">▶ START</button>`;
