@@ -564,6 +564,7 @@ function updateCartBar() {
 // Cart modal
 window.openCart = function() {
   const itemsDiv = document.getElementById('cartItems');
+  if (!itemsDiv) return;
   itemsDiv.innerHTML = '';
   cart.forEach((item, idx) => {
     const optStr = Object.entries(item.options).map(([k,v]) => `${k}: ${v}`).join(', ');
