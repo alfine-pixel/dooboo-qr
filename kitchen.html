@@ -275,12 +275,12 @@ function formatTimer(ms) {
 }
 
 // Firebase listener
-const ordersRef = ref(db, 'orders');
+const ordersRef = ref(db, 'orderItems');
 onValue(ordersRef, snap => {
   allOrders = snap.val() || {};
   render();
 });
-
+ 
 function filterItems(items) {
   if (currentSection === 'ALL') return items;
   const ids = SECTION_ITEMS[currentSection] || [];
