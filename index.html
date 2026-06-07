@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dooboo — Order</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --red: #C0392B;
+    --dark: #1a1a1a;
+    --bg: #f5f0eb;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --muted: #888;
+    --border: #e0d8d0;
+    --badge: #fff3cd;
+  }
+
+  body {
+    font-family: 'Georgia', serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 120px;
+  }
+
+  header {
+    background: var(--dark);
+    color: white;
+    padding: 16px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo { font-size: 22px; font-weight: bold; letter-spacing: 1px; }
+  .table-badge {
+    background: var(--red);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+  }
+
+  .section-tabs {
+    display: flex;
+    overflow-x: auto;
+    background: white;
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 57px;
+    z-index: 99;
+    scrollbar-width: none;
+  }
+  .section-tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    padding: 12px 20px;
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: 14px;
+    border-bottom: 3px solid transparent;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .tab.active {
+    color: var(--red);
+    border-bottom-color: var(--red);
+    font-weight: bold;
+  }
+
+  .section-title {
+    padding: 20px 16px 8px;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--dark);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  .menu-list { padding: 0 12px; }
+
+  .menu-item {
+    background: var(--card);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+  .menu-item:active { box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+
+  .item-info { flex: 1; }
+  .item-name { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
+  .item-options { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .item-price {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--red);
+    white-space: nowrap;
+    margin-left: 12px;
+  }
+
+  /* Cart */
+  .cart-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--dark);
+    color: white;
+    padding: 16px 20px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 200;
+  }
+  .cart-bar.visible { display: flex; }
+  .cart-count {
+    background: var(--red);
+    color: white;
+    border-radius: 50%;
+    width: 24px; height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+  .cart-total { font-size: 16px; }
+  .cart-btn {
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 300;
+    align-items: flex-end;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .modal h3 { font-size: 18px; margin-bottom: 16px; }
+
+  .option-group { margin-bottom: 16px; }
+  .option-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .option-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    margin: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+  .option-btn.selected {
+    border-color: var(--red);
+    background: var(--red);
+    color: white;
+  }
+
+  .qty-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .qty-btn {
+    width: 36px; height: 36px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    background: white;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .qty-num { font-size: 20px; font-weight: bold; min-width: 30px; text-align: center; }
+
+  .note-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .add-btn {
+    width: 100%;
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 16px;
+  }
+
+  /* Cart modal */
+  .cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-size: 15px; font-weight: bold; }
+  .cart-item-sub { font-size: 12px; color: var(--muted); }
+  .cart-item-price { font-weight: bold; color: var(--red); margin: 0 12px; }
+  .remove-btn { color: var(--muted); cursor: pointer; font-size: 18px; }
+
+  .payment-section { margin-top: 16px; }
+  .payment-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; font-weight: bold; }
+  .payment-btns { display: flex; gap: 10px; }
+  .pay-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+  .pay-btn.selected { border-color: var(--red); background: #fff0ee; color: var(--red); font-weight: bold; }
+
+  .place-btn {
+    width: 100%;
+    background: var(--dark);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 16px;
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: bold;
+    border-top: 2px solid var(--dark);
+    margin-top: 8px;
+  }
+
+  .success-msg {
+    text-align: center;
+    padding: 30px 20px;
+  }
+  .success-msg .icon { font-size: 48px; margin-bottom: 12px; }
+  .success-msg h3 { font-size: 22px; margin-bottom: 8px; }
+  .success-msg p { color: var(--muted); }
+
+  .close-btn {
+    position: absolute;
+    top: 16px; right: 16px;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--muted);
+  }
+  .modal { position: relative; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🍲 DOOBOO</div>
+  <div class="table-badge" id="tableLabel">Table —</div>
+</header>
+
+<div class="section-tabs" id="sectionTabs"></div>
+
+<div id="menuContent"></div>
+
+<div class="cart-bar" id="cartBar">
+  <div>
+    <span class="cart-count" id="cartCount">0</span>
+    <span class="cart-total" id="cartTotal">$0.00</span>
+  </div>
+  <button class="cart-btn" onclick="openCart()">View Order →</button>
+</div>
+
+<!-- Item modal -->
+<div class="modal-overlay" id="itemModal">
+  <div class="modal">
+    <span class="close-btn" onclick="closeItemModal()">×</span>
+    <h3 id="modalItemName"></h3>
+    <div id="modalPrice" style="color:var(--red);font-size:18px;margin-bottom:12px;"></div>
+    <div id="modalOptions"></div>
+    <div class="qty-row">
+      <button class="qty-btn" onclick="changeQty(-1)">−</button>
+      <div class="qty-num" id="qtyNum">1</div>
+      <button class="qty-btn" onclick="changeQty(1)">+</button>
+    </div>
+    <div>
+      <div class="option-label">Special Request</div>
+      <input class="note-input" id="itemNote" placeholder="e.g. no onion, extra spicy...">
+    </div>
+    <button class="add-btn" id="addBtn" onclick="addToCart()">Add to Order — $0.00</button>
+  </div>
+</div>
+
+<!-- Cart modal -->
+<div class="modal-overlay" id="cartModal">
+  <div class="modal">
+    <span class="close-btn" onclick="closeCart()">×</span>
+    <h3>Your Order</h3>
+    <div id="cartItems"></div>
+    <div class="total-row">
+      <span>Total</span>
+      <span id="cartTotalModal">$0.00</span>
+    </div>
+    <div class="payment-section">
+      <div class="payment-label">Payment Method</div>
+      <div class="payment-btns">
+        <button class="pay-btn selected" id="payCash" onclick="selectPayment('cash')">💵 Cash</button>
+        <button class="pay-btn" id="payCard" onclick="selectPayment('card')">💳 Card</button>
+      </div>
+    </div>
+    <button class="place-btn" onclick="placeOrder()">Place Order</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAwSCTrTUhhCZfhoI5YOu3ab0qB8N4Nq8g",
+  authDomain: "dooboo-qr.firebaseapp.com",
+  databaseURL: "https://dooboo-qr-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "dooboo-qr",
+  storageBucket: "dooboo-qr.firebasestorage.app",
+  messagingSenderId: "492622836549",
+  appId: "1:492622836549:web:79de70997b1b081014042c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Menu Data
+const MENU = {
+  "Soon-Tofu": [
+    { id: "st1", name: "Signature Soon-Tofu", price: 19.8, options: { "Spice Level": ["Hot", "Spicy", "Mild"] } },
+    { id: "st2", name: "Clear Soon-Tofu", price: 19.8, options: {} },
+    { id: "st3", name: "Mushroom & Veggie Soon-Tofu", price: 19.8, options: { "Spice Level": ["Hot", "Spicy"] } },
+    { id: "st4", name: "Kimchi Soon-Tofu", price: 20.8, options: { "Spice Level": ["Hot", "Spicy"] } },
+    { id: "st5", name: "Ham & Sausage Soon-Tofu", price: 22.8, options: { "Spice Level": ["Hot", "Spicy"] } },
+    { id: "st6", name: "Seafood Soon-Tofu", price: 24.8, options: { "Spice Level": ["Hot", "Spicy"] } },
+    { id: "st7", name: "Pork Intestine Soon-Tofu", price: 24.8, options: { "Spice Level": ["Hot", "Spicy"] } },
+  ],
+  "Grill": [
+    { id: "gr1", name: "Charcoal Pork Galbi (360g)", price: 24.8, options: {} },
+    { id: "gr2", name: "Charcoal Pork Galbi Small", price: 13.8, options: {} },
+    { id: "gr3", name: "Wagyu Beef Tteokgalbi", price: 23.8, options: { "Add-on": ["Cheese +$3"] } },
+    { id: "gr4", name: "Wagyu Beef Tteokgalbi Small", price: 13.8, options: { "Add-on": ["Cheese +$2"] } },
+    { id: "gr5", name: "Charcoal Beef Steak (280g)", price: 24.8, options: {} },
+    { id: "gr6", name: "Charcoal Beef Steak Small", price: 13.8, options: {} },
+    { id: "gr7", name: "Wagyu Beef Bulgogi (320g)", price: 27.8, options: {} },
+    { id: "gr8", name: "Pork Neck Bone Soup", price: 24.8, options: {} },
+    { id: "gr9", name: "Pork Rice Soup", price: 21.8, options: {} },
+    { id: "gr10", name: "Sundae Gukbap", price: 24.8, options: {} },
+    { id: "gr11", name: "Pork Kimchi Stew", price: 19.8, options: {} },
+    { id: "gr12", name: "Tofu Dolsot Bibimbap", price: 18.8, options: {} },
+    { id: "gr13", name: "Wagyu Beef Dolsot Bibimbap", price: 19.8, options: {} },
+    { id: "gr14", name: "Tteokbokki", price: 15.8, options: {} },
+    { id: "gr15", name: "Corn Cheese", price: 10.8, options: { "Add-on": ["Extra Cheese +$3"] } },
+  ],
+  "Fryer": [
+    { id: "fr1", name: "Boneless Chicken Medium", price: 18.8, options: { "Sauce": ["Original", "Sweet Chili +$2", "Soy Garlic +$2"] } },
+    { id: "fr2", name: "Boneless Chicken Large", price: 33.8, options: { "Sauce": ["Original", "Sweet Chili +$2", "Soy Garlic +$2", "Half & Half +$3"] } },
+    { id: "fr3", name: "Boneless Chicken Small", price: 12.8, options: { "Sauce": ["Original", "Sweet Chili +$1", "Soy Garlic +$1"] } },
+    { id: "fr4", name: "Wangja Donkasu", price: 17.8, options: {} },
+    { id: "fr5", name: "King Donkasu", price: 22.8, options: {} },
+    { id: "fr6", name: "Donkasu Small", price: 13.8, options: {} },
+    { id: "fr7", name: "Veggie Fried Dumpling (4pcs)", price: 9.8, options: {} },
+    { id: "fr8", name: "Meat Fried Dumpling (4pcs)", price: 10.8, options: {} },
+    { id: "fr9", name: "Sausage Tteok Gangjeong", price: 10.8, options: {} },
+  ]
+};
+
+// State
+let cart = [];
+let currentItem = null;
+let currentQty = 1;
+let selectedOptions = {};
+let selectedPayment = 'cash';
+let tableNum = 1;
+
+// Get table from URL
+const params = new URLSearchParams(window.location.search);
+tableNum = params.get('table') || '1';
+document.getElementById('tableLabel').textContent = `Table ${tableNum}`;
+
+// Build tabs & menu
+const tabs = document.getElementById('sectionTabs');
+const content = document.getElementById('menuContent');
+
+Object.entries(MENU).forEach(([section, items], idx) => {
+  const tab = document.createElement('div');
+  tab.className = 'tab' + (idx === 0 ? ' active' : '');
+  tab.textContent = section;
+  tab.onclick = () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('sec-' + section).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  tabs.appendChild(tab);
+
+  const sec = document.createElement('div');
+  sec.id = 'sec-' + section;
+  sec.innerHTML = `<div class="section-title">${section}</div><div class="menu-list"></div>`;
+  const list = sec.querySelector('.menu-list');
+
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'menu-item';
+    const optStr = Object.entries(item.options).map(([k,v]) => `${k}: ${v.join(' / ')}`).join(' · ');
+    div.innerHTML = `
+      <div class="item-info">
+        <div class="item-name">${item.name}</div>
+        ${optStr ? `<div class="item-options">${optStr}</div>` : ''}
+      </div>
+      <div class="item-price">$${item.price.toFixed(2)}</div>
+    `;
+    div.onclick = () => openItemModal(item);
+    list.appendChild(div);
+  });
+
+  content.appendChild(sec);
+});
+
+// Item modal
+window.openItemModal = function(item) {
+  currentItem = item;
+  currentQty = 1;
+  selectedOptions = {};
+  document.getElementById('modalItemName').textContent = item.name;
+  document.getElementById('modalPrice').textContent = `$${item.price.toFixed(2)}`;
+  document.getElementById('itemNote').value = '';
+  document.getElementById('qtyNum').textContent = 1;
+
+  const optDiv = document.getElementById('modalOptions');
+  optDiv.innerHTML = '';
+
+  Object.entries(item.options).forEach(([group, opts]) => {
+    const g = document.createElement('div');
+    g.className = 'option-group';
+    g.innerHTML = `<div class="option-label">${group}</div>`;
+    opts.forEach(opt => {
+      const btn = document.createElement('div');
+      btn.className = 'option-btn';
+      btn.textContent = opt;
+      btn.onclick = () => {
+        g.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedOptions[group] = opt;
+        updateAddBtn();
+      };
+      g.appendChild(btn);
+    });
+    optDiv.appendChild(g);
+  });
+
+  updateAddBtn();
+  document.getElementById('itemModal').classList.add('open');
+};
+
+window.closeItemModal = () => document.getElementById('itemModal').classList.remove('open');
+
+window.changeQty = function(d) {
+  currentQty = Math.max(1, currentQty + d);
+  document.getElementById('qtyNum').textContent = currentQty;
+  updateAddBtn();
+};
+
+function updateAddBtn() {
+  let price = currentItem.price;
+  Object.values(selectedOptions).forEach(opt => {
+    const match = opt.match(/\+\$(\d+)/);
+    if (match) price += parseFloat(match[1]);
+  });
+  const total = price * currentQty;
+  document.getElementById('addBtn').textContent = `Add to Order — $${total.toFixed(2)}`;
+}
+
+window.addToCart = function() {
+  let price = currentItem.price;
+  Object.values(selectedOptions).forEach(opt => {
+    const match = opt.match(/\+\$(\d+)/);
+    if (match) price += parseFloat(match[1]);
+  });
+  cart.push({
+    id: currentItem.id,
+    name: currentItem.name,
+    price,
+    qty: currentQty,
+    options: { ...selectedOptions },
+    note: document.getElementById('itemNote').value
+  });
+  closeItemModal();
+  updateCartBar();
+};
+
+function updateCartBar() {
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const count = cart.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
+  document.getElementById('cartBar').classList.toggle('visible', cart.length > 0);
+}
+
+// Cart modal
+window.openCart = function() {
+  const itemsDiv = document.getElementById('cartItems');
+  itemsDiv.innerHTML = '';
+  cart.forEach((item, idx) => {
+    const optStr = Object.entries(item.options).map(([k,v]) => `${k}: ${v}`).join(', ');
+    const d = document.createElement('div');
+    d.className = 'cart-item';
+    d.innerHTML = `
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.qty}× ${item.name}</div>
+        ${optStr ? `<div class="cart-item-sub">${optStr}</div>` : ''}
+        ${item.note ? `<div class="cart-item-sub">📝 ${item.note}</div>` : ''}
+      </div>
+      <div class="cart-item-price">$${(item.price * item.qty).toFixed(2)}</div>
+      <div class="remove-btn" onclick="removeItem(${idx})">×</div>
+    `;
+    itemsDiv.appendChild(d);
+  });
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  document.getElementById('cartTotalModal').textContent = `$${total.toFixed(2)}`;
+  document.getElementById('cartModal').classList.add('open');
+};
+
+window.closeCart = () => document.getElementById('cartModal').classList.remove('open');
+
+window.removeItem = function(idx) {
+  cart.splice(idx, 1);
+  updateCartBar();
+  if (cart.length === 0) { closeCart(); return; }
+  openCart();
+};
+
+window.selectPayment = function(method) {
+  selectedPayment = method;
+  document.getElementById('payCash').classList.toggle('selected', method === 'cash');
+  document.getElementById('payCard').classList.toggle('selected', method === 'card');
+};
+
+window.placeOrder = async function() {
+  if (cart.length === 0) return;
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const order = {
+    table: tableNum,
+    items: cart,
+    total,
+    payment: selectedPayment,
+    status: 'NEW',
+    createdAt: Date.now()
+  };
+  try {
+    const ordersRef = ref(db, 'orders');
+    await push(ordersRef, order);
+    cart = [];
+    updateCartBar();
+    closeCart();
+    showSuccess();
+  } catch (e) {
+    alert('Order failed. Please try again.');
+    console.error(e);
+  }
+};
+
+function showSuccess() {
+  const modal = document.getElementById('cartModal');
+  modal.classList.add('open');
+  modal.querySelector('.modal').innerHTML = `
+    <div class="success-msg">
+      <div class="icon">✅</div>
+      <h3>Order Placed!</h3>
+      <p>Your order has been sent to the kitchen.<br>Please wait at your table.</p>
+      <br>
+      <button class="place-btn" onclick="document.getElementById('cartModal').classList.remove('open')">OK</button>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>

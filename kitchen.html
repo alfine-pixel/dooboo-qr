@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dooboo — Kitchen Display</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #111;
+    --card-new: #1a1a2e;
+    --card-prep: #1a2e1a;
+    --card-done: #2e2a1a;
+    --new: #4a9eff;
+    --prep: #4aff88;
+    --done: #ffb84a;
+    --red: #ff4a4a;
+    --text: #ffffff;
+    --muted: #888;
+    --border: #333;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+  }
+
+  header {
+    background: #000;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo { font-size: 20px; font-weight: bold; letter-spacing: 2px; color: white; }
+
+  .section-filter {
+    display: flex;
+    gap: 8px;
+  }
+  .filter-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .filter-btn.active { border-color: white; color: white; background: #333; }
+
+  .clock { font-size: 18px; font-weight: bold; color: var(--muted); }
+
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    height: calc(100vh - 57px);
+  }
+
+  .column {
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+  }
+  .column:last-child { border-right: none; }
+
+  .col-header {
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .col-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    display: inline-block;
+  }
+
+  .order-card {
+    margin: 10px;
+    border-radius: 10px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .order-card:active { transform: scale(0.98); }
+
+  .status-NEW { background: var(--card-new); border-color: var(--new); }
+  .status-PREPARING { background: var(--card-prep); border-color: var(--prep); }
+  .status-DONE { background: var(--card-done); border-color: var(--done); opacity: 0.7; }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .table-num { font-size: 20px; font-weight: bold; }
+  .order-time { font-size: 12px; color: var(--muted); }
+
+  .timer {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 10px;
+  }
+  .timer-green { background: rgba(74,255,136,0.2); color: var(--prep); }
+  .timer-yellow { background: rgba(255,184,74,0.2); color: var(--done); }
+  .timer-red { background: rgba(255,74,74,0.2); color: var(--red); }
+
+  .order-items { margin-bottom: 12px; }
+  .order-item {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .order-item:last-child { border-bottom: none; }
+  .item-qty { color: var(--new); font-weight: bold; margin-right: 6px; }
+  .item-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .payment-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+  .pay-cash { background: rgba(74,255,136,0.15); color: var(--prep); }
+  .pay-card { background: rgba(74,158,255,0.15); color: var(--new); }
+
+  .action-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-start { background: var(--new); color: #000; }
+  .btn-done { background: var(--prep); color: #000; }
+  .btn-clear { background: #333; color: var(--muted); }
+  .action-btn:hover { opacity: 0.85; }
+
+  .empty-col {
+    text-align: center;
+    color: var(--muted);
+    padding: 40px 20px;
+    font-size: 14px;
+  }
+
+  .col-count {
+    background: #333;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🍲 KITCHEN</div>
+  <div class="section-filter">
+    <button class="filter-btn active" onclick="setSection('ALL')">ALL</button>
+    <button class="filter-btn" onclick="setSection('Soon-Tofu')">Soon-Tofu</button>
+    <button class="filter-btn" onclick="setSection('Grill')">Grill</button>
+    <button class="filter-btn" onclick="setSection('Fryer')">Fryer</button>
+  </div>
+  <div class="clock" id="clock">--:--</div>
+</header>
+
+<div class="columns">
+  <div class="column">
+    <div class="col-header">
+      <div><span class="col-dot" style="background:#4a9eff"></span>NEW</div>
+      <span class="col-count" id="countNew">0</span>
+    </div>
+    <div id="colNew"></div>
+  </div>
+  <div class="column">
+    <div class="col-header">
+      <div><span class="col-dot" style="background:#4aff88"></span>PREPARING</div>
+      <span class="col-count" id="countPrep">0</span>
+    </div>
+    <div id="colPrep"></div>
+  </div>
+  <div class="column">
+    <div class="col-header">
+      <div><span class="col-dot" style="background:#ffb84a"></span>DONE</div>
+      <span class="col-count" id="countDone">0</span>
+    </div>
+    <div id="colDone"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAwSCTrTUhhCZfhoI5YOu3ab0qB8N4Nq8g",
+  authDomain: "dooboo-qr.firebaseapp.com",
+  databaseURL: "https://dooboo-qr-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "dooboo-qr",
+  storageBucket: "dooboo-qr.firebasestorage.app",
+  messagingSenderId: "492622836549",
+  appId: "1:492622836549:web:79de70997b1b081014042c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Section filter
+const SECTION_ITEMS = {
+  "Soon-Tofu": ["st1","st2","st3","st4","st5","st6","st7"],
+  "Grill": ["gr1","gr2","gr3","gr4","gr5","gr6","gr7","gr8","gr9","gr10","gr11","gr12","gr13","gr14","gr15"],
+  "Fryer": ["fr1","fr2","fr3","fr4","fr5","fr6","fr7","fr8","fr9"]
+};
+
+let currentSection = 'ALL';
+let allOrders = {};
+
+window.setSection = function(sec) {
+  currentSection = sec;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent === sec);
+  });
+  render();
+};
+
+// Clock
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit' });
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// Timer
+function getTimerClass(ms) {
+  const mins = ms / 60000;
+  if (mins < 5) return 'timer-green';
+  if (mins < 10) return 'timer-yellow';
+  return 'timer-red';
+}
+function formatTimer(ms) {
+  const m = Math.floor(ms / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  return `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+// Firebase listener
+const ordersRef = ref(db, 'orders');
+onValue(ordersRef, snap => {
+  allOrders = snap.val() || {};
+  render();
+});
+
+function filterItems(items) {
+  if (currentSection === 'ALL') return items;
+  const ids = SECTION_ITEMS[currentSection] || [];
+  return items.filter(i => ids.includes(i.id));
+}
+
+function render() {
+  const now = Date.now();
+  const cols = { NEW: [], PREPARING: [], DONE: [] };
+
+  Object.entries(allOrders).forEach(([key, order]) => {
+    const filtered = filterItems(order.items || []);
+    if (currentSection !== 'ALL' && filtered.length === 0) return;
+    cols[order.status] = cols[order.status] || [];
+    cols[order.status].push({ key, order, filtered });
+  });
+
+  ['NEW','PREPARING','DONE'].forEach(status => {
+    const colId = status === 'NEW' ? 'colNew' : status === 'PREPARING' ? 'colPrep' : 'colDone';
+    const countId = status === 'NEW' ? 'countNew' : status === 'PREPARING' ? 'countPrep' : 'countDone';
+    const col = document.getElementById(colId);
+    const list = cols[status] || [];
+
+    document.getElementById(countId).textContent = list.length;
+
+    if (list.length === 0) {
+      col.innerHTML = `<div class="empty-col">No orders</div>`;
+      return;
+    }
+
+    col.innerHTML = '';
+    list.sort((a,b) => a.order.createdAt - b.order.createdAt).forEach(({ key, order, filtered }) => {
+      const elapsed = now - order.createdAt;
+      const card = document.createElement('div');
+      card.className = `order-card status-${order.status}`;
+
+      const items = currentSection === 'ALL' ? order.items : filtered;
+      const itemsHtml = items.map(item => {
+        const opts = Object.entries(item.options || {}).map(([k,v]) => `${k}: ${v}`).join(', ');
+        return `<div class="order-item">
+          <span class="item-qty">${item.qty}×</span>${item.name}
+          ${opts ? `<div class="item-sub">${opts}</div>` : ''}
+          ${item.note ? `<div class="item-sub">📝 ${item.note}</div>` : ''}
+        </div>`;
+      }).join('');
+
+      let actionBtn = '';
+      if (order.status === 'NEW') {
+        actionBtn = `<button class="action-btn btn-start" onclick="updateStatus('${key}', 'PREPARING')">▶ START</button>`;
+      } else if (order.status === 'PREPARING') {
+        actionBtn = `<button class="action-btn btn-done" onclick="updateStatus('${key}', 'DONE')">✓ DONE</button>`;
+      } else {
+        actionBtn = `<button class="action-btn btn-clear" onclick="clearOrder('${key}')">✕ CLEAR</button>`;
+      }
+
+      const timerClass = getTimerClass(elapsed);
+      const timerStr = formatTimer(elapsed);
+
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="table-num">Table ${order.table}</div>
+          <span class="timer ${timerClass}">${timerStr}</span>
+        </div>
+        <span class="payment-tag ${order.payment === 'cash' ? 'pay-cash' : 'pay-card'}">
+          ${order.payment === 'cash' ? '💵 Cash' : '💳 Card'}
+        </span>
+        <div class="order-items">${itemsHtml}</div>
+        ${actionBtn}
+      `;
+      col.appendChild(card);
+    });
+  });
+}
+
+// Update timer every second
+setInterval(() => render(), 5000);
+
+window.updateStatus = async function(key, newStatus) {
+  await update(ref(db, `orders/${key}`), { status: newStatus });
+};
+
+window.clearOrder = async function(key) {
+  await remove(ref(db, `orders/${key}`));
+};
+</script>
+</body>
+</html>
