@@ -613,9 +613,26 @@ window.placeOrder = async function() {
     createdAt: Date.now()
   };
   try {
-    const ordersRef = ref(db, 'orders');
+const ordersRef = ref(db, 'orders');
     const newRef = await push(ordersRef, order);
     const orderId = newRef.key;
+
+    // 아이템별로 개별 저장
+    const itemsRef = ref(db, 'orderItems');
+    for (const item of cart) {
+      await push(itemsRef, {
+        orderId,
+        table: tableNum,
+        name: item.name,
+        qty: item.qty,
+        price: item.price,
+        options: item.options || {},
+        note: item.note || '',
+        section: item.id.startsWith('st') ? 'Soon-Tofu' : item.id.startsWith('gr') ? 'Grill' : 'Fryer',
+        status: 'NEW',
+        createdAt: Date.now()
+      });
+    }
 
     if (selectedPayment === 'card') {
       const res = await fetch('/api/checkout', {
