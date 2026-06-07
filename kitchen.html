@@ -315,7 +315,7 @@ function render() {
     list.sort((a,b) => a.order.createdAt - b.order.createdAt).forEach(({ key, order }) => {
       const elapsed = now - order.createdAt;
       const card = document.createElement('div');
-      card.className = `order-card status-${order.status}${order.requested ? ' requested' : ''}`;
+      card.className = `order-card status-${order.status}${(order.requested || order.note) ? ' requested' : ''}`;
 
       let actionBtn = '';
       if (order.status === 'NEW') {
