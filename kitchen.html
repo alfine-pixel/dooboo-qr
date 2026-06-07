@@ -324,7 +324,10 @@ function render() {
           <button class="action-btn" style="margin-top:6px;background:${order.requested ? '#ff4a4a' : '#444'};color:white" onclick="toggleRequest('${key}', ${!!order.requested})">⚡ REQUEST</button>
         `;
       } else if (order.status === 'PREPARING') {
-        actionBtn = `<button class="action-btn btn-done" onclick="updateStatus('${key}', 'DONE')">✓ DONE</button>`;
+        actionBtn = `
+          <button class="action-btn btn-done" onclick="updateStatus('${key}', 'DONE')">✓ DONE</button>
+          <button class="action-btn" style="margin-top:6px;background:${order.requested ? '#ff4a4a' : '#444'};color:white" onclick="toggleRequest('${key}', ${!!order.requested})">⚡ REQUEST</button>
+        `;
       } else {
         actionBtn = `
           <button class="action-btn btn-done" style="margin-bottom:6px" onclick="updateStatus('${key}', 'PREPARING')">↩ RECALL</button>
