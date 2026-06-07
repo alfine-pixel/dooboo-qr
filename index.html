@@ -600,7 +600,6 @@ window.placeOrder = async function() {
     const orderId = newRef.key;
 
     if (selectedPayment === 'card') {
-      // Stripe 결제 페이지로 이동
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
