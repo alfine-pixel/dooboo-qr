@@ -317,7 +317,7 @@ function render() {
       const card = document.createElement('div');
       card.className = `order-card status-${order.status}`;
 
-      const items = currentSection === 'ALL' ? order.items : filtered;
+      const items = (currentSection === 'ALL' ? order.items : filtered) || [];
       const itemsHtml = items.map(item => {
         const opts = Object.entries(item.options || {}).map(([k,v]) => `${k}: ${v}`).join(', ');
         return `<div class="order-item">
