@@ -106,7 +106,9 @@
   .order-card:active { transform: scale(0.98); }
 
   .status-NEW { background: var(--card-new); border-color: var(--new); }
+  .status-NEW.requested { background: #2e1a1a; border-color: var(--red); }
   .status-PREPARING { background: var(--card-prep); border-color: var(--prep); }
+  .status-PREPARING.requested { background: #2e1a1a; border-color: var(--red); }
   .status-DONE { background: var(--card-done); border-color: var(--done); opacity: 0.7; }
 
   .card-header {
@@ -313,11 +315,14 @@ function render() {
     list.sort((a,b) => a.order.createdAt - b.order.createdAt).forEach(({ key, order }) => {
       const elapsed = now - order.createdAt;
       const card = document.createElement('div');
-      card.className = `order-card status-${order.status}`;
+      card.className = `order-card status-${order.status}${order.requested ? ' requested' : ''}`;
 
       let actionBtn = '';
       if (order.status === 'NEW') {
-        actionBtn = `<button class="action-btn btn-start" onclick="updateStatus('${key}', 'PREPARING')">▶ START</button>`;
+        actionBtn = `
+          <button class="action-btn btn-start" onclick="updateStatus('${key}', 'PREPARING')">▶ START</button>
+          <button class="action-btn" style="margin-top:6px;background:${order.requested ? '#ff4a4a' : '#444'};color:white" onclick="toggleRequest('${key}', ${!!order.requested})">⚡ REQUEST</button>
+        `;
       } else if (order.status === 'PREPARING') {
         actionBtn = `<button class="action-btn btn-done" onclick="updateStatus('${key}', 'DONE')">✓ DONE</button>`;
       } else {
@@ -358,6 +363,10 @@ window.updateStatus = async function(key, newStatus) {
 window.clearOrder = async function(key) {
   await remove(ref(db, `orderItems/${key}`));
 };
+window.toggleRequest = async function(key, current) {
+  await update(ref(db, `orderItems/${key}`), { requested: !current });
+};
+ 
 </script>
 </body>
 </html>
