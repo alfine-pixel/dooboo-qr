@@ -591,16 +591,33 @@ window.placeOrder = async function() {
     items: cart,
     total,
     payment: selectedPayment,
-    status: 'NEW',
+    status: selectedPayment === 'cash' ? 'NEW' : 'PENDING_PAYMENT',
     createdAt: Date.now()
   };
   try {
     const ordersRef = ref(db, 'orders');
-    await push(ordersRef, order);
-    cart = [];
-    updateCartBar();
-    closeCart();
-    showSuccess();
+    const newRef = await push(ordersRef, order);
+    const orderId = newRef.key;
+
+    if (selectedPayment === 'card') {
+      // Stripe 결제 페이지로 이동
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: cart, table: tableNum, orderId })
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Payment failed. Please try again.');
+      }
+    } else {
+      cart = [];
+      updateCartBar();
+      closeCart();
+      showSuccess();
+    }
   } catch (e) {
     alert('Order failed. Please try again.');
     console.error(e);
