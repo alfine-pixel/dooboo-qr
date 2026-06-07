@@ -339,15 +339,18 @@ function render() {
       const timerClass = getTimerClass(elapsed);
       const timerStr = formatTimer(elapsed);
 
-      card.innerHTML = `
+card.innerHTML = `
         <div class="card-header">
           <div class="table-num">Table ${order.table}</div>
           <span class="timer ${timerClass}">${timerStr}</span>
         </div>
-        <span class="payment-tag ${order.payment === 'cash' ? 'pay-cash' : 'pay-card'}">
-          ${order.payment === 'cash' ? '💵 Cash' : '💳 Card'}
-        </span>
-        <div class="order-items">${itemsHtml}</div>
+        <div class="order-items">
+          <div class="order-item">
+            <span class="item-qty">${order.qty}×</span>${order.name}
+            ${Object.entries(order.options || {}).map(([k,v]) => `<div class="item-sub">${k}: ${v}</div>`).join('')}
+            ${order.note ? `<div class="item-sub">📝 ${order.note}</div>` : ''}
+          </div>
+        </div>
         ${actionBtn}
       `;
       col.appendChild(card);
