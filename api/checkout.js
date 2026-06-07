@@ -26,6 +26,10 @@ export default async function handler(req, res) {
       mode: 'payment',
       success_url: `${process.env.BASE_URL}/?table=${table}&payment=success`,
       cancel_url: `${process.env.BASE_URL}/?table=${table}&payment=cancel`,
+      metadata: {
+        orderId: String(orderId),
+        table: String(table),
+      },
     });
 
     res.status(200).json({ url: session.url });
