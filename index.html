@@ -641,19 +641,7 @@ window.placeOrder = async function() {
 };
 
 function showSuccess() {
-  const overlay = document.getElementById('cartModal');
-  const modal = overlay.querySelector('.modal');
-  if (!modal) return;
-  overlay.classList.add('open');
-  modal.innerHTML = `
-    <div class="success-msg">
-      <div class="icon">✅</div>
-      <h3>Order Placed!</h3>
-      <p>Your order has been sent to the kitchen.<br>Please wait at your table.</p>
-      <br>
-      <button class="place-btn" onclick="document.getElementById('cartModal').classList.remove('open')">OK</button>
-    </div>
-  `;
+  document.getElementById('successModal').classList.add('open');
 }
 </script>
 </body>
