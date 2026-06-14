@@ -389,8 +389,13 @@ function render() {
     // rule: if any item is PREPARING -> group acts as PREPARING (done btn visible/active)
     const allDone = group.items.every(it => it.status === 'DONE');
 
-    const itemsHtml = group.items.map(it => {
-      const highlight = currentSection !== 'ALL' && it.section === currentSection;
+    const visibleItems = currentSection === 'ALL'
+      ? group.items
+      : group.items.filter(it => it.section === currentSection);
+
+    if (visibleItems.length === 0) return;
+
+    const itemsHtml = visibleItems.map(it => {
       let stateClass = '';
       if (it.status === 'DONE') stateClass = 'item-done';
       else if (it.status === 'PREPARING') stateClass = 'item-preparing';
@@ -398,7 +403,7 @@ function render() {
       else if (it.status === 'RECOOK') stateClass = 'item-recook';
       else if (it.status === 'REQUEST') stateClass = 'item-requested';
       return `
-        <div class="order-item ${highlight ? 'highlight' : ''} ${stateClass}" onclick="openItemModal('${it.key}')">
+        <div class="order-item ${stateClass}" onclick="openItemModal('${it.key}')">
           <div class="item-main">
             <span class="item-qty">${it.qty}×</span>${it.name}
             ${it.note ? `<div class="item-sub">📝 ${it.note}</div>` : ''}
