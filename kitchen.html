@@ -70,7 +70,16 @@
   }
 
   @media (max-width: 1100px) {
-    .board { grid-template-columns: repeat(2, 1fr); }
+    .board { grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; }
+    .table-num { font-size: 17px; }
+    .item-main { font-size: 13px; }
+    .item-sub { font-size: 11px; }
+    .timer { font-size: 14px; padding: 3px 8px; }
+    .order-items { padding: 6px 12px; }
+    .order-item { padding: 6px 0; }
+    .order-item.item-done, .order-item.item-preparing, .order-item.item-hold,
+    .order-item.item-recook, .order-item.item-requested { margin: 0 -12px; padding: 6px 12px; }
+    .done-btn { padding: 10px; font-size: 14px; }
   }
   @media (max-width: 700px) {
     .board { grid-template-columns: 1fr; }
