@@ -496,13 +496,16 @@ Object.entries(MENU).forEach(([section, items], idx) => {
   items.forEach(item => {
     const div = document.createElement('div');
     div.className = 'menu-item';
-    const optStr = Object.entries(item.options).map(([k,v]) => `${k}: ${v.join(' / ')}`).join(' · ');
+    const crown = item.popular ? ' <span class="crown">👑</span>' : '';
+    const spice = item.spicy ? ' <span class="spice-icon">🌶️</span>' : '';
+    const subtitle = item.subtitle ? `${item.subtitle} ` : '';
     div.innerHTML = `
       <div class="item-info">
-        <div class="item-name">${item.name}</div>
-        ${optStr ? `<div class="item-options">${optStr}</div>` : ''}
+        <div class="item-name">${item.name}${crown}</div>
+        <div class="item-subtitle">${subtitle}${item.desc || ''}</div>
+        <div class="item-price">$${item.price.toFixed(2)}${spice}</div>
       </div>
-      <div class="item-price">$${item.price.toFixed(2)}</div>
+      ${item.image ? `<img class="item-image" src="${item.image}" alt="${item.name}">` : `<div class="item-image"></div>`}
     `;
     div.onclick = () => openItemModal(item);
     list.appendChild(div);
