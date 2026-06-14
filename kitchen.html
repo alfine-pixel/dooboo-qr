@@ -81,7 +81,7 @@
     .table-num { font-size: 14px; }
     .table-sub { font-size: 9px; }
     .timer { font-size: 11px; padding: 2px 6px; border-radius: 6px; }
-    .order-items { padding: 2px 6px; }
+    .order-items { padding: 2px 6px; max-height: 120px; overflow-y: auto; }
     .order-item { padding: 3px 0; gap: 4px; border-left-width: 3px; }
     .order-item.item-done, .order-item.item-preparing, .order-item.item-hold,
     .order-item.item-recook, .order-item.item-requested { margin: 0 -6px; padding: 3px 6px; }
@@ -109,7 +109,7 @@
     .table-num { font-size: 13px; }
     .table-sub { font-size: 9px; }
     .timer { font-size: 11px; padding: 2px 6px; border-radius: 6px; }
-    .order-items { padding: 2px 8px; }
+    .order-items { padding: 2px 8px; max-height: 130px; overflow-y: auto; }
     .order-item { padding: 4px 0; gap: 4px; border-left-width: 3px; }
     .order-item.item-done, .order-item.item-preparing, .order-item.item-hold,
     .order-item.item-recook, .order-item.item-requested { margin: 0 -8px; padding: 4px 8px; }
@@ -159,9 +159,11 @@
   .timer-yellow { color: #fff3cd; }
   .timer-red { color: #fff; background: var(--red); }
 
-  .order-items {
+    .order-items {
     padding: 8px 14px;
     flex: 1;
+    max-height: 168px;
+    overflow-y: auto;
   }
 
   .order-item {
