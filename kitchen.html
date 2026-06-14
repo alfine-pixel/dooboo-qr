@@ -378,4 +378,101 @@ function render() {
     const allDone = group.items.every(it => it.status === 'DONE');
 
     const itemsHtml = group.items.map(it => {
-      const highlight = currentSection !== 'ALL' && it.section === curre
+      const highlight = currentSection !== 'ALL' && it.section === currentSection;
+      const isHold = it.status === 'HOLD';
+      const checked = it.status === 'PREPARING' || it.status === 'DONE';
+      let checkContent = '';
+      if (it.status === 'DONE') checkContent = '✓';
+      else if (it.status === 'PREPARING') checkContent = '✓';
+      else if (isHold) checkContent = '⏸';
+      return `
+        <div class="order-item ${highlight ? 'highlight' : ''} ${isHold ? 'held' : ''}" onclick="openItemModal('${it.key}')">
+          <div class="item-main">
+            <span class="item-qty">${it.qty}×</span>${it.name}
+            ${it.note ? `<div class="item-sub">📝 ${it.note}</div>` : ''}
+            <div class="item-sub">${it.section || ''}${isHold ? ' · HOLD' : ''}${it.requested ? ' · ⚡REQUEST' : ''}</div>
+          </div>
+          <button class="check-btn ${checked ? 'checked' : ''} ${isHold ? 'held' : ''}">${checkContent}</button>
+        </div>
+      `;
+    }).join('');
+
+    const card = document.createElement('div');
+    card.className = `order-card ${isUrgent ? 'urgent' : ''}`;
+    card.innerHTML = `
+      <div class="card-header ${headerClass}">
+        <div>
+          <div class="table-num">${tableLabel}</div>
+          <div class="table-sub">Order ${group.orderId.slice(-6)}</div>
+        </div>
+        <span class="timer ${timerClass}">${formatTimer(elapsed)}</span>
+      </div>
+      <div class="order-items">${itemsHtml}</div>
+      <button class="done-btn ${allDone ? 'is-done' : ''}" onclick="completeGroup(${JSON.stringify(group.items.map(it=>it.key))})">
+        ${allDone ? '✓ COMPLETED' : 'DONE ✓'}
+      </button>
+    `;
+    board.appendChild(card);
+  });
+}
+
+// Refresh timers periodically
+setInterval(() => render(), 5000);
+
+window.openItemModal = function(key) {
+  const item = allItems[key];
+  if (!item) return;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) closeModal(); };
+
+  const isRequested = !!item.requested;
+
+  overlay.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-title">${item.section || ''}${item.table ? ' · Table ' + item.table : ''}</div>
+      <div class="modal-item-name">${item.qty}× ${item.name}</div>
+      <div class="modal-grid">
+        <button class="modal-btn btn-completed" onclick="setItemStatus('${key}','DONE')">COMPLETED</button>
+        <button class="modal-btn btn-request" onclick="toggleRequest('${key}', ${isRequested})">${isRequested ? 'CANCEL REQUEST' : 'REQUEST'}</button>
+        <button class="modal-btn btn-preparing" onclick="setItemStatus('${key}','PREPARING')">PREPARING</button>
+        <button class="modal-btn btn-hold" onclick="setItemStatus('${key}','HOLD')">HOLD</button>
+        <button class="modal-btn btn-recook" onclick="setItemStatus('${key}','PREPARING')">RECOOK</button>
+        <button class="modal-btn btn-reset" onclick="setItemStatus('${key}','NEW')">RESET</button>
+      </div>
+      <button class="modal-btn btn-delete" style="width:100%" onclick="deleteItem('${key}')">DELETE</button>
+      <button class="btn-cancel" onclick="closeModal()">CANCEL</button>
+    </div>
+  `;
+  document.getElementById('modalContainer').appendChild(overlay);
+};
+
+window.closeModal = function() {
+  const c = document.getElementById('modalContainer');
+  c.innerHTML = '';
+};
+
+window.setItemStatus = async function(key, newStatus) {
+  await update(ref(db, `orderItems/${key}`), { status: newStatus });
+  closeModal();
+};
+
+window.toggleRequest = async function(key, current) {
+  await update(ref(db, `orderItems/${key}`), { requested: !current });
+  closeModal();
+};
+
+window.deleteItem = async function(key) {
+  await remove(ref(db, `orderItems/${key}`));
+  closeModal();
+};
+
+window.completeGroup = async function(keys) {
+  const updates = {};
+  keys.forEach(k => { updates[`orderItems/${k}/status`] = 'DONE'; });
+  await update(ref(db), updates);
+};
+</script>
+</body>
+</html>
