@@ -484,6 +484,7 @@ function render() {
           <div class="item-main">
             <span class="item-qty">${it.qty}×</span>${it.name}
             ${it.note ? `<div class="item-sub">📝 ${it.note}</div>` : ''}
+${it.options && Object.keys(it.options).length ? `<div class="item-sub">${Object.entries(it.options).map(([k,v]) => `${k}: ${v}`).join(', ')}</div>` : ''}
             <div class="item-sub">${it.section || ''}${it.status !== 'NEW' ? ' · ' + (it.status === 'REQUEST' ? '⚡REQUEST' : it.status === 'DONE' ? 'COMPLETED' : it.status) : ''}</div>
           </div>
         </div>
