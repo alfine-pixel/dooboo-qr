@@ -152,13 +152,17 @@
   .order-item.item-preparing .item-sub { color: #5a4a2a; }
 
   .order-item.item-hold {
-    background: #b07aff;
-    color: #fff;
+    background: var(--hold);
     margin: 0 -14px;
     padding: 8px 14px;
   }
-  .order-item.item-hold .item-sub { color: #f0e6ff; }
 
+   .order-item.item-recook {
+    background: #e6c9c0;
+    margin: 0 -14px;
+    padding: 8px 14px;
+  }
+ 
   .order-item.item-requested {
     background: #ffd6d6;
     color: #5a1a1a;
@@ -352,7 +356,7 @@ onValue(ordersRef, snap => {
 function groupByOrder() {
   const groups = {};
   Object.entries(allItems).forEach(([key, item]) => {
-    if (!['NEW','PREPARING','HOLD','DONE'].includes(item.status)) return;
+    if (!['NEW','PREPARING','HOLD','RECOOK','DONE'].includes(item.status)) return;
     const oid = item.orderId || key;
     if (!groups[oid]) groups[oid] = { orderId: oid, table: item.table, createdAt: item.createdAt, items: [] };
     groups[oid].items.push({ key, ...item });
@@ -401,6 +405,7 @@ function render() {
       if (it.status === 'DONE') stateClass = 'item-done';
       else if (it.status === 'PREPARING') stateClass = 'item-preparing';
       else if (it.status === 'HOLD') stateClass = 'item-hold';
+      else if (it.status === 'RECOOK') stateClass = 'item-recook';
       if (it.requested) stateClass += ' item-requested';
       return `
         <div class="order-item ${highlight ? 'highlight' : ''} ${stateClass}" onclick="openItemModal('${it.key}')">
@@ -454,7 +459,7 @@ window.openItemModal = function(key) {
         <button class="modal-btn btn-request" onclick="toggleRequest('${key}', ${isRequested})">${isRequested ? 'CANCEL REQUEST' : 'REQUEST'}</button>
         <button class="modal-btn btn-preparing" onclick="setItemStatus('${key}','PREPARING')">PREPARING</button>
         <button class="modal-btn btn-hold" onclick="setItemStatus('${key}','HOLD')">HOLD</button>
-        <button class="modal-btn btn-recook" onclick="setItemStatus('${key}','PREPARING')">RECOOK</button>
+        <button class="modal-btn btn-recook" onclick="setItemStatus('${key}','RECOOK')">RECOOK</button>
         <button class="modal-btn btn-reset" onclick="setItemStatus('${key}','NEW')">RESET</button>
       </div>
       <button class="modal-btn btn-delete" style="width:100%" onclick="deleteItem('${key}')">DELETE</button>
