@@ -391,17 +391,17 @@ function render() {
 
     const itemsHtml = group.items.map(it => {
       const highlight = currentSection !== 'ALL' && it.section === currentSection;
-      const isHold = it.status === 'HOLD';
-      const isChecked = it.status === 'PREPARING' || it.status === 'DONE';
       let stateClass = '';
-      if (isHold) stateClass = 'item-hold';
-      else if (isChecked) stateClass = 'item-checked';
+      if (it.status === 'DONE') stateClass = 'item-done';
+      else if (it.status === 'PREPARING') stateClass = 'item-preparing';
+      else if (it.status === 'HOLD') stateClass = 'item-hold';
+      if (it.requested) stateClass += ' item-requested';
       return `
         <div class="order-item ${highlight ? 'highlight' : ''} ${stateClass}" onclick="openItemModal('${it.key}')">
           <div class="item-main">
             <span class="item-qty">${it.qty}×</span>${it.name}
             ${it.note ? `<div class="item-sub">📝 ${it.note}</div>` : ''}
-            <div class="item-sub">${it.section || ''}${isHold ? ' · HOLD' : ''}${it.requested ? ' · ⚡REQUEST' : ''}</div>
+            <div class="item-sub">${it.section || ''}${it.status === 'HOLD' ? ' · HOLD' : ''}${it.requested ? ' · ⚡REQUEST' : ''}</div>
           </div>
         </div>
       `;
