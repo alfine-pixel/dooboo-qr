@@ -8,18 +8,19 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --red: #C0392B;
+    --primary: #16a34a;
+    --primary-light: #e8f5e9;
     --dark: #1a1a1a;
-    --bg: #f5f0eb;
+    --bg: #ffffff;
     --card: #ffffff;
     --text: #1a1a1a;
-    --muted: #888;
-    --border: #e0d8d0;
+    --muted: #8a8a8a;
+    --border: #ececec;
     --badge: #fff3cd;
   }
 
   body {
-    font-family: 'Georgia', serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
@@ -27,15 +28,39 @@
   }
 
   header {
-    background: var(--dark);
-    color: white;
-    padding: 16px 20px;
+    background: #ffffff;
+    color: var(--text);
+    padding: 12px 16px;
     position: sticky;
     top: 0;
     z-index: 100;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .back-btn {
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    flex: 1;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .table-badge {
+    background: var(--primary);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    flex-shrink: 0;
   }
 
   .logo { font-size: 22px; font-weight: bold; letter-spacing: 1px; }
