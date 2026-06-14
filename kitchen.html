@@ -470,11 +470,10 @@ window.closeModal = function() {
 };
 
 window.setItemStatus = async function(key, newStatus) {
-  const updates = { status: newStatus };
-  if (newStatus === 'NEW') updates.requested = false;
-  await update(ref(db, `orderItems/${key}`), updates);
+  await update(ref(db, `orderItems/${key}`), { status: newStatus, requested: false });
   closeModal();
 };
+ 
 window.toggleRequest = async function(key, current) {
   await update(ref(db, `orderItems/${key}`), { requested: !current });
   closeModal();
