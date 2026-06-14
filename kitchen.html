@@ -345,7 +345,7 @@ onValue(ordersRef, snap => {
 function groupByOrder() {
   const groups = {};
   Object.entries(allItems).forEach(([key, item]) => {
-    if (!['NEW','PREPARING','HOLD','RECOOK','DONE'].includes(item.status)) return;
+    if (!['NEW','PREPARING','HOLD','RECOOK','REQUEST','DONE'].includes(item.status)) return;
     const oid = item.orderId || key;
     if (!groups[oid]) groups[oid] = { orderId: oid, table: item.table, createdAt: item.createdAt, items: [] };
     groups[oid].items.push({ key, ...item });
@@ -378,7 +378,7 @@ function render() {
   groups.forEach(group => {
     const elapsed = now - group.createdAt;
     const timerClass = getTimerClass(elapsed);
-    const isUrgent = timerClass === 'timer-red' || group.items.some(it => it.requested);
+    const isUrgent = timerClass === 'timer-red' || group.items.some(it => it.status === 'REQUEST');
 
     const isCounter = group.table === 'COUNTER' || group.table === 'counter';
     const headerClass = isCounter ? 'header-counter' : 'header-table';
@@ -395,13 +395,13 @@ function render() {
       else if (it.status === 'PREPARING') stateClass = 'item-preparing';
       else if (it.status === 'HOLD') stateClass = 'item-hold';
       else if (it.status === 'RECOOK') stateClass = 'item-recook';
-      if (it.requested) stateClass += ' item-requested';
+      else if (it.status === 'REQUEST') stateClass = 'item-requested';
       return `
         <div class="order-item ${highlight ? 'highlight' : ''} ${stateClass}" onclick="openItemModal('${it.key}')">
           <div class="item-main">
             <span class="item-qty">${it.qty}×</span>${it.name}
             ${it.note ? `<div class="item-sub">📝 ${it.note}</div>` : ''}
-            <div class="item-sub">${it.section || ''}${it.status === 'DONE' ? ' · COMPLETED' : ''}${it.status === 'PREPARING' ? ' · PREPARING' : ''}${it.status === 'HOLD' ? ' · HOLD' : ''}${it.status === 'RECOOK' ? ' · RECOOK' : ''}${it.requested ? ' · ⚡REQUEST' : ''}</div>
+            <div class="item-sub">${it.section || ''}${it.status !== 'NEW' ? ' · ' + (it.status === 'REQUEST' ? '⚡REQUEST' : it.status === 'DONE' ? 'COMPLETED' : it.status) : ''}</div>
           </div>
         </div>
       `;
@@ -436,16 +436,13 @@ window.openItemModal = function(key) {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.onclick = (e) => { if (e.target === overlay) closeModal(); };
-
-  const isRequested = !!item.requested;
-
   overlay.innerHTML = `
     <div class="modal-box">
       <div class="modal-title">${item.section || ''}${item.table ? ' · Table ' + item.table : ''}</div>
       <div class="modal-item-name">${item.qty}× ${item.name}</div>
       <div class="modal-grid">
         <button class="modal-btn btn-completed" onclick="setItemStatus('${key}','DONE')">COMPLETED</button>
-        <button class="modal-btn btn-request" onclick="toggleRequest('${key}', ${isRequested})">${isRequested ? 'CANCEL REQUEST' : 'REQUEST'}</button>
+        <button class="modal-btn btn-request" onclick="setItemStatus('${key}','REQUEST')">REQUEST</button>
         <button class="modal-btn btn-preparing" onclick="setItemStatus('${key}','PREPARING')">PREPARING</button>
         <button class="modal-btn btn-hold" onclick="setItemStatus('${key}','HOLD')">HOLD</button>
         <button class="modal-btn btn-recook" onclick="setItemStatus('${key}','RECOOK')">RECOOK</button>
@@ -464,15 +461,10 @@ window.closeModal = function() {
 };
 
 window.setItemStatus = async function(key, newStatus) {
-  await update(ref(db, `orderItems/${key}`), { status: newStatus, requested: false });
+  await update(ref(db, `orderItems/${key}`), { status: newStatus });
   closeModal();
 };
  
-window.toggleRequest = async function(key, current) {
-  await update(ref(db, `orderItems/${key}`), { requested: !current });
-  closeModal();
-};
-
 window.deleteItem = async function(key) {
   await remove(ref(db, `orderItems/${key}`));
   closeModal();
