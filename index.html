@@ -63,76 +63,81 @@
     flex-shrink: 0;
   }
 
-  .logo { font-size: 22px; font-weight: bold; letter-spacing: 1px; }
-  .table-badge {
-    background: var(--red);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-  }
+  
 
   .section-tabs {
     display: flex;
+    gap: 8px;
     overflow-x: auto;
     background: white;
-    border-bottom: 2px solid var(--border);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
     position: sticky;
-    top: 57px;
+    top: 49px;
     z-index: 99;
     scrollbar-width: none;
   }
   .section-tabs::-webkit-scrollbar { display: none; }
 
   .tab {
-    padding: 12px 20px;
+    padding: 8px 16px;
     white-space: nowrap;
     cursor: pointer;
     font-size: 14px;
-    border-bottom: 3px solid transparent;
-    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text);
+    background: white;
     transition: all 0.2s;
+    flex-shrink: 0;
   }
   .tab.active {
-    color: var(--red);
-    border-bottom-color: var(--red);
+    color: var(--primary);
+    border-color: var(--primary);
+    background: var(--primary-light);
     font-weight: bold;
   }
 
   .section-title {
-    padding: 20px 16px 8px;
-    font-size: 18px;
-    font-weight: bold;
+    padding: 20px 16px 4px;
+    font-size: 24px;
+    font-weight: 800;
     color: var(--dark);
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 8px;
   }
 
-  .menu-list { padding: 0 12px; }
+  .section-desc {
+    padding: 0 16px 12px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .menu-list { padding: 0 16px; }
 
   .menu-item {
-    background: var(--card);
-    border-radius: 10px;
-    margin-bottom: 10px;
-    padding: 14px 16px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    border: 1px solid var(--border);
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
     cursor: pointer;
-    transition: box-shadow 0.2s;
+    gap: 12px;
   }
-  .menu-item:active { box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
 
   .item-info { flex: 1; }
-  .item-name { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
-  .item-options { font-size: 12px; color: var(--muted); margin-top: 4px; }
-  .item-price {
-    font-size: 16px;
-    font-weight: bold;
-    color: var(--red);
-    white-space: nowrap;
-    margin-left: 12px;
+  .item-name { font-size: 16px; font-weight: bold; margin-bottom: 4px; }
+  .item-name .crown { font-size: 14px; margin-left: 4px; }
+  .item-subtitle { font-size: 13px; color: var(--muted); line-height: 1.4; margin-bottom: 6px; }
+  .item-price { font-size: 15px; font-weight: bold; color: var(--text); margin-top: 8px; }
+  .spice-icon { display: inline-block; font-size: 14px; margin-left: 4px; }
+
+  .item-image {
+    width: 96px;
+    height: 96px;
+    border-radius: 10px;
+    background: var(--border);
+    flex-shrink: 0;
+    object-fit: cover;
   }
 
   /* Cart */
@@ -149,7 +154,7 @@
   }
   .cart-bar.visible { display: flex; }
   .cart-count {
-    background: var(--red);
+    background: var(--primary);
     color: white;
     border-radius: 50%;
     width: 24px; height: 24px;
@@ -161,7 +166,7 @@
   }
   .cart-total { font-size: 16px; }
   .cart-btn {
-    background: var(--red);
+    background: var(--primary);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -206,8 +211,8 @@
     transition: all 0.15s;
   }
   .option-btn.selected {
-    border-color: var(--red);
-    background: var(--red);
+    border-color: var(--primary);
+    background: var(--primary);
     color: white;
   }
 
@@ -239,7 +244,7 @@
 
   .add-btn {
     width: 100%;
-    background: var(--red);
+    background: var(--primary);
     color: white;
     border: none;
     padding: 14px;
@@ -261,7 +266,7 @@
   .cart-item-info { flex: 1; }
   .cart-item-name { font-size: 15px; font-weight: bold; }
   .cart-item-sub { font-size: 12px; color: var(--muted); }
-  .cart-item-price { font-weight: bold; color: var(--red); margin: 0 12px; }
+  .cart-item-price { font-weight: bold; color: var(--primary); margin: 0 12px; }
   .remove-btn { color: var(--muted); cursor: pointer; font-size: 18px; }
 
   .payment-section { margin-top: 16px; }
@@ -277,7 +282,7 @@
     font-size: 14px;
     transition: all 0.15s;
   }
-  .pay-btn.selected { border-color: var(--red); background: #fff0ee; color: var(--red); font-weight: bold; }
+  .pay-btn.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary); font-weight: bold; }
 
   .place-btn {
     width: 100%;
@@ -323,7 +328,8 @@
 <body>
 
 <header>
-  <div class="logo">🍲 DOOBOO</div>
+  <span class="back-btn">←</span>
+  <div class="header-title" id="headerTitle">Dooboo</div>
   <div class="table-badge" id="tableLabel">Table —</div>
 </header>
 
@@ -344,7 +350,7 @@
   <div class="modal">
     <span class="close-btn" onclick="closeItemModal()">×</span>
     <h3 id="modalItemName"></h3>
-    <div id="modalPrice" style="color:var(--red);font-size:18px;margin-bottom:12px;"></div>
+    <div id="modalPrice" style="color:var(--primary);font-size:18px;margin-bottom:12px;"></div>
     <div id="modalOptions"></div>
     <div class="qty-row">
       <button class="qty-btn" onclick="changeQty(-1)">−</button>
