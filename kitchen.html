@@ -318,7 +318,9 @@
 <header>
   <div class="logo">🍲 KITCHEN <span class="total-count" id="totalCount">0</span></div>
   <div class="section-filter">
-    <button class="filter-btn active" onclick="setSection('ALL')">ALL</button>
+      <button class="filter-btn view-btn active" data-mode="ACTIVE" onclick="setViewMode('ACTIVE')">🔥 ACTIVE</button>
+  <button class="filter-btn view-btn" data-mode="COMPLETED" onclick="setViewMode('COMPLETED')">✅ COMPLETED</button>
+   <button class="filter-btn active" onclick="setSection('ALL')">ALL</button>
     <button class="filter-btn" onclick="setSection('Soon-Tofu')">Soon-Tofu</button>
     <button class="filter-btn" onclick="setSection('Grill')">Grill</button>
     <button class="filter-btn" onclick="setSection('Fryer')">Fryer</button>
@@ -356,6 +358,17 @@ const db = getDatabase(app);
 let currentSection = 'ALL';
 let allItems = {};
 let currentPage = 0;
+let viewMode = 'ACTIVE'; // 'ACTIVE' or 'COMPLETED'
+
+window.setViewMode = function(mode) {
+  viewMode = mode;
+  currentPage = 0;
+  document.querySelectorAll('.view-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  render();
+};
+ 
 const CARDS_PER_PAGE = 6;
 
 window.setSection = function(sec) {
@@ -410,10 +423,13 @@ function groupByOrder() {
     groups[oid].items.push({ key, ...item });
     if (item.createdAt < groups[oid].createdAt) groups[oid].createdAt = item.createdAt;
   });
-  // drop fully-done groups
+  if (viewMode === 'COMPLETED') {
+    // only fully-done groups
+    return Object.values(groups).filter(g => g.items.every(it => it.status === 'DONE'));
+  }
+  // ACTIVE: drop fully-done groups
   return Object.values(groups).filter(g => g.items.some(it => it.status !== 'DONE'));
 }
-
 function groupContainsSection(group, section) {
   if (section === 'ALL') return true;
   return group.items.some(it => it.section === section);
@@ -493,6 +509,9 @@ ${it.options && Object.keys(it.options).length ? `<div class="item-sub">${Object
 
     const card = document.createElement('div');
     card.className = `order-card ${isUrgent ? 'urgent' : ''}`;
+    const actionBtn = viewMode === 'COMPLETED'
+      ? `<button class="done-btn" style="background:#3b82f6;" onclick='resetGroup(${JSON.stringify(group.items.map(it=>it.key))})'>↺ RESET TO NEW</button>`
+      : `<button class="done-btn ${allDone ? 'is-done' : ''}" onclick='completeGroup(${JSON.stringify(group.items.map(it=>it.key))})'>${allDone ? '✓ COMPLETED' : 'DONE ✓'}</button>`;
     card.innerHTML = `
       <div class="card-header ${headerClass}">
         <div>
@@ -502,9 +521,7 @@ ${it.options && Object.keys(it.options).length ? `<div class="item-sub">${Object
         <span class="timer ${timerClass}">${formatTimer(elapsed)}</span>
       </div>
       <div class="order-items">${itemsHtml}</div>
-      <button class="done-btn ${allDone ? 'is-done' : ''}" onclick='completeGroup(${JSON.stringify(group.items.map(it=>it.key))})'>
-        ${allDone ? '✓ COMPLETED' : 'DONE ✓'}
-      </button>
+      ${actionBtn}
     `;
     board.appendChild(card);
   });
@@ -578,6 +595,17 @@ window.completeGroup = async function(keys) {
 
   const updates = {};
   keys.forEach(k => { updates[`orderItems/${k}/status`] = 'DONE'; });
+  await update(ref(db), updates);
+};
+
+ window.resetGroup = async function(keys) {
+  keys.forEach(k => {
+    if (allItems[k]) allItems[k] = { ...allItems[k], status: 'NEW' };
+  });
+  render();
+
+  const updates = {};
+  keys.forEach(k => { updates[`orderItems/${k}/status`] = 'NEW'; });
   await update(ref(db), updates);
 };
 </script>
