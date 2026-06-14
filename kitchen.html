@@ -306,6 +306,7 @@ let currentSection = 'ALL';
 let allItems = {};
 
 window.setSection = function(sec) {
+  console.log('setSection called:', sec);
   currentSection = sec;
   document.querySelectorAll('.filter-btn').forEach(b => {
     b.classList.toggle('active', b.textContent === sec);
