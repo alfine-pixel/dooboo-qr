@@ -419,13 +419,13 @@ const db = getDatabase(app);
 // Menu Data
 const MENU = {
   "Soon-Tofu": [
-    { id: "st1", name: "Signature Soon-Tofu", price: 19.8, options: { "Spice Level": ["Hot", "Spicy", "Mild"] } },
-    { id: "st2", name: "Clear Soon-Tofu", price: 19.8, options: {} },
-    { id: "st3", name: "Mushroom & Veggie Soon-Tofu", price: 19.8, options: { "Spice Level": ["Hot", "Spicy"] } },
-    { id: "st4", name: "Kimchi Soon-Tofu", price: 20.8, options: { "Spice Level": ["Hot", "Spicy"] } },
-    { id: "st5", name: "Ham & Sausage Soon-Tofu", price: 22.8, options: { "Spice Level": ["Hot", "Spicy"] } },
-    { id: "st6", name: "Seafood Soon-Tofu", price: 24.8, options: { "Spice Level": ["Hot", "Spicy"] } },
-    { id: "st7", name: "Pork Intestine Soon-Tofu", price: 24.8, options: { "Spice Level": ["Hot", "Spicy"] } },
+    { id: "st1", name: "Signature Soon-Tofu", subtitle: "시그니처 순두부", desc: "Spicy silken tofu stew made with egg, vegetables, spring onion", price: 19.8, spicy: true, popular: true, image: "", options: { "Spice Level": ["Hot", "Spicy", "Mild"] } },
+    { id: "st2", name: "Clear Soon-Tofu", subtitle: "맑은 순두부", desc: "Mild silken tofu stew made with egg, vegetables, spring onion", price: 19.8, spicy: false, popular: false, image: "", options: {} },
+    { id: "st3", name: "Mushroom & Veggie Soon-Tofu", subtitle: "버섯채소 순두부", desc: "Spicy silken tofu stew made with vegetables, enoki mushroom", price: 19.8, spicy: true, popular: false, image: "", options: { "Spice Level": ["Hot", "Spicy"] } },
+    { id: "st4", name: "Kimchi Soon-Tofu", subtitle: "김치 순두부", desc: "Spicy silken tofu stew made with egg, pork, vegetables, kimchi", price: 20.8, spicy: true, popular: false, image: "", options: { "Spice Level": ["Hot", "Spicy"] } },
+    { id: "st5", name: "Ham & Sausage Soon-Tofu", subtitle: "햄소세지 순두부", desc: "Spicy silken tofu stew made with ham, sausage, vegetables", price: 22.8, spicy: true, popular: false, image: "", options: { "Spice Level": ["Hot", "Spicy"] } },
+    { id: "st6", name: "Seafood Soon-Tofu", subtitle: "해물 순두부", desc: "Spicy silken tofu stew made with assorted seafood, vegetables", price: 24.8, spicy: true, popular: false, image: "", options: { "Spice Level": ["Hot", "Spicy"] } },
+    { id: "st7", name: "Pork Intestine Soon-Tofu", subtitle: "곱창 순두부", desc: "Spicy silken tofu stew made with pork intestine, vegetables", price: 24.8, spicy: true, popular: false, image: "", options: { "Spice Level": ["Hot", "Spicy"] } },
   ],
   "Grill": [
     { id: "gr1", name: "Charcoal Pork Galbi (360g)", price: 24.8, options: {} },
