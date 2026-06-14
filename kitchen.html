@@ -14,6 +14,7 @@
     --prep: #4aff88;
     --done: #ffb84a;
     --red: #ff4a4a;
+    --hold: #c9a4ff;
     --text: #ffffff;
     --muted: #999;
     --border: #333;
@@ -152,6 +153,76 @@
     border-color: var(--prep);
     color: #000;
   }
+  .check-btn.held {
+    background: var(--hold);
+    border-color: var(--hold);
+    color: #000;
+  }
+  .order-item.held { opacity: 0.6; }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  .modal-box {
+    background: #1c1c1c;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 420px;
+    padding: 20px;
+  }
+  .modal-title {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .modal-item-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+  .modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .modal-btn {
+    padding: 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .modal-btn:hover { opacity: 0.85; }
+  .modal-btn:active { transform: scale(0.97); }
+  .btn-completed { background: #b9d9a8; color: #143; }
+  .btn-request { background: #aee0ff; color: #034; }
+  .btn-hold { background: var(--hold); color: #303; }
+  .btn-preparing { background: #ffe3a8; color: #432; }
+  .btn-recook { background: #e6c9c0; color: #531; }
+  .btn-reset { background: var(--red); color: #fff; }
+  .btn-delete { background: #444; color: var(--muted); }
+  .btn-cancel {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 4px;
+  }
 
   .done-btn {
     width: 100%;
@@ -200,6 +271,8 @@
 </header>
 
 <div class="board" id="board"></div>
+
+<div id="modalContainer"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -261,7 +334,7 @@ onValue(ordersRef, snap => {
 function groupByOrder() {
   const groups = {};
   Object.entries(allItems).forEach(([key, item]) => {
-    if (!['NEW','PREPARING','DONE'].includes(item.status)) return;
+    if (!['NEW','PREPARING','HOLD','DONE'].includes(item.status)) return;
     const oid = item.orderId || key;
     if (!groups[oid]) groups[oid] = { orderId: oid, table: item.table, createdAt: item.createdAt, items: [] };
     groups[oid].items.push({ key, ...item });
@@ -294,7 +367,7 @@ function render() {
   groups.forEach(group => {
     const elapsed = now - group.createdAt;
     const timerClass = getTimerClass(elapsed);
-    const isUrgent = timerClass === 'timer-red';
+    const isUrgent = timerClass === 'timer-red' || group.items.some(it => it.requested);
 
     const isCounter = group.table === 'COUNTER' || group.table === 'counter';
     const headerClass = isCounter ? 'header-counter' : 'header-table';
@@ -305,52 +378,4 @@ function render() {
     const allDone = group.items.every(it => it.status === 'DONE');
 
     const itemsHtml = group.items.map(it => {
-      const highlight = currentSection !== 'ALL' && it.section === currentSection;
-      const checked = it.status !== 'NEW'; // PREPARING or DONE => checked
-      return `
-        <div class="order-item ${highlight ? 'highlight' : ''}">
-          <div class="item-main">
-            <span class="item-qty">${it.qty}×</span>${it.name}
-            ${it.note ? `<div class="item-sub">📝 ${it.note}</div>` : ''}
-            <div class="item-sub">${it.section || ''}</div>
-          </div>
-          <button class="check-btn ${checked ? 'checked' : ''}" onclick="toggleItem('${it.key}','${it.status}')">${checked ? '✓' : ''}</button>
-        </div>
-      `;
-    }).join('');
-
-    const card = document.createElement('div');
-    card.className = `order-card ${isUrgent ? 'urgent' : ''}`;
-    card.innerHTML = `
-      <div class="card-header ${headerClass}">
-        <div>
-          <div class="table-num">${tableLabel}</div>
-          <div class="table-sub">Order ${group.orderId.slice(-6)}</div>
-        </div>
-        <span class="timer ${timerClass}">${formatTimer(elapsed)}</span>
-      </div>
-      <div class="order-items">${itemsHtml}</div>
-      <button class="done-btn ${allDone ? 'is-done' : ''}" onclick="completeGroup(${JSON.stringify(group.items.map(it=>it.key))})">
-        ${allDone ? '✓ COMPLETED' : 'DONE ✓'}
-      </button>
-    `;
-    board.appendChild(card);
-  });
-}
-
-// Refresh timers periodically
-setInterval(() => render(), 5000);
-
-window.toggleItem = async function(key, currentStatus) {
-  const newStatus = currentStatus === 'NEW' ? 'PREPARING' : 'NEW';
-  await update(ref(db, `orderItems/${key}`), { status: newStatus });
-};
-
-window.completeGroup = async function(keys) {
-  const updates = {};
-  keys.forEach(k => { updates[`orderItems/${k}/status`] = 'DONE'; });
-  await update(ref(db), updates);
-};
-</script>
-</body>
-</html>
+      const highlight = currentSection !== 'ALL' && it.section === curre
