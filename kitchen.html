@@ -69,21 +69,34 @@
     padding: 12px;
   }
 
-  @media (max-width: 1100px) {
-    .board { grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; }
-    .table-num { font-size: 17px; }
-    .item-main { font-size: 13px; }
-    .item-sub { font-size: 11px; }
-    .timer { font-size: 14px; padding: 3px 8px; }
-    .order-items { padding: 6px 12px; }
-    .order-item { padding: 6px 0; }
+  @media (max-width: 1400px) {
+    header { padding: 4px 10px; }
+    .logo { font-size: 14px; }
+    .clock { font-size: 12px; }
+    .filter-btn { padding: 2px 8px; font-size: 10px; }
+    .total-count { font-size: 10px; padding: 1px 6px; }
+    .board { grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; }
+    .order-card { border-radius: 6px; }
+    .card-header { padding: 4px 8px; }
+    .table-num { font-size: 14px; }
+    .table-sub { font-size: 9px; }
+    .timer { font-size: 11px; padding: 2px 6px; border-radius: 6px; }
+    .order-items { padding: 2px 6px; }
+    .order-item { padding: 3px 0; gap: 4px; border-left-width: 3px; }
     .order-item.item-done, .order-item.item-preparing, .order-item.item-hold,
-    .order-item.item-recook, .order-item.item-requested { margin: 0 -12px; padding: 6px 12px; }
-    .done-btn { padding: 10px; font-size: 14px; }
+    .order-item.item-recook, .order-item.item-requested { margin: 0 -6px; padding: 3px 6px; }
+    .item-main { font-size: 11px; line-height: 1.15; }
+    .item-sub { font-size: 8px; }
+    .done-btn { padding: 5px; font-size: 11px; letter-spacing: 0; }
+    .modal-box { padding: 12px; max-width: 260px; }
+    .modal-item-name { font-size: 13px; }
+    .modal-btn { padding: 8px; font-size: 11px; }
   }
-  @media (max-width: 700px) {
+
+ @media (max-width: 700px) {
     .board { grid-template-columns: 1fr; }
   }
+ 
  @media (max-width: 900px) and (max-height: 450px) {
     header { padding: 4px 8px; }
     .logo { font-size: 13px; }
