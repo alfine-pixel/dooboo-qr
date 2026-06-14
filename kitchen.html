@@ -127,6 +127,7 @@
     padding: 8px 0;
     border-bottom: 1px solid var(--border);
     gap: 10px;
+    border-left: 4px solid transparent;
   }
   .order-item:last-child { border-bottom: none; }
   .order-item.highlight { background: var(--highlight); margin: 0 -14px; padding: 8px 14px; }
@@ -140,6 +141,7 @@
     color: #143;
     margin: 0 -14px;
     padding: 8px 14px;
+    border-left-color: #5a9a4a;
   }
   .order-item.item-done .item-sub { color: #2a5a2a; }
 
@@ -148,19 +150,22 @@
     color: #432;
     margin: 0 -14px;
     padding: 8px 14px;
+    border-left-color: #d4a040;
   }
   .order-item.item-preparing .item-sub { color: #5a4a2a; }
 
   .order-item.item-hold {
-    background: var(--hold);
+    background: #a87bff;
     margin: 0 -14px;
     padding: 8px 14px;
+    border-left-color: #7a3acc;
   }
 
    .order-item.item-recook {
     background: #e6c9c0;
     margin: 0 -14px;
     padding: 8px 14px;
+    border-left-color: #b56a4a;
   }
  
   .order-item.item-requested {
@@ -168,6 +173,7 @@
     color: #034;
     margin: 0 -14px;
     padding: 8px 14px;
+    border-left-color: #2a8acc;
   }
   .order-item.item-requested .item-sub { color: #8a3a3a; }
   .order-item.item-checked {
