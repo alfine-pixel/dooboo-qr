@@ -9,16 +9,15 @@
 
   :root {
     --bg: #111;
-    --card-new: #1a1a2e;
-    --card-prep: #1a2e1a;
-    --card-done: #2e2a1a;
+    --card-bg: #1c1c1c;
     --new: #4a9eff;
     --prep: #4aff88;
     --done: #ffb84a;
     --red: #ff4a4a;
     --text: #ffffff;
-    --muted: #888;
+    --muted: #999;
     --border: #333;
+    --highlight: #2a3a1a;
   }
 
   body {
@@ -60,132 +59,137 @@
 
   .clock { font-size: 18px; font-weight: bold; color: var(--muted); }
 
-  .columns {
+  .board {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    height: calc(100vh - 57px);
+    gap: 12px;
+    padding: 12px;
   }
 
-  .column {
-    border-right: 1px solid var(--border);
-    overflow-y: auto;
+  @media (max-width: 1100px) {
+    .board { grid-template-columns: repeat(2, 1fr); }
   }
-  .column:last-child { border-right: none; }
-
-  .col-header {
-    padding: 12px 16px;
-    font-size: 13px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .col-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    margin-right: 8px;
-    display: inline-block;
+  @media (max-width: 700px) {
+    .board { grid-template-columns: 1fr; }
   }
 
   .order-card {
-    margin: 10px;
-    border-radius: 10px;
-    padding: 14px;
+    background: var(--card-bg);
     border: 1px solid var(--border);
-    cursor: pointer;
-    transition: transform 0.1s;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
-  .order-card:active { transform: scale(0.98); }
 
-  .status-NEW { background: var(--card-new); border-color: var(--new); }
-  .status-NEW.requested { background: #2e1a1a; border-color: var(--red); }
-  .status-PREPARING { background: var(--card-prep); border-color: var(--prep); }
-  .status-PREPARING.requested { background: #2e1a1a; border-color: var(--red); }
-  .status-DONE { background: var(--card-done); border-color: var(--done); opacity: 0.7; }
+  .order-card.urgent {
+    border-color: var(--red);
+    box-shadow: 0 0 0 1px var(--red);
+  }
 
   .card-header {
+    padding: 12px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    color: #000;
   }
+
+  .header-table { background: linear-gradient(135deg,#3ec46d,#2e9e57); }
+  .header-counter { background: linear-gradient(135deg,#7e5cff,#5e3edb); color:#fff; }
 
   .table-num { font-size: 20px; font-weight: bold; }
-  .order-time { font-size: 12px; color: var(--muted); }
+  .table-sub { font-size: 12px; opacity: 0.85; margin-top: 2px; }
 
   .timer {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 10px;
+    background: rgba(0,0,0,0.25);
   }
-  .timer-green { background: rgba(74,255,136,0.2); color: var(--prep); }
-  .timer-yellow { background: rgba(255,184,74,0.2); color: var(--done); }
-  .timer-red { background: rgba(255,74,74,0.2); color: var(--red); }
+  .timer-green { color: #143; }
+  .timer-yellow { color: #432; }
+  .timer-red { color: #fff; background: var(--red); }
 
-  .order-items { margin-bottom: 12px; }
+  .order-items {
+    padding: 8px 14px;
+    flex: 1;
+  }
+
   .order-item {
-    padding: 6px 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 8px 0;
     border-bottom: 1px solid var(--border);
-    font-size: 14px;
+    gap: 10px;
   }
   .order-item:last-child { border-bottom: none; }
+  .order-item.highlight { background: var(--highlight); margin: 0 -14px; padding: 8px 14px; }
+
+  .item-main { font-size: 15px; line-height: 1.4; }
   .item-qty { color: var(--new); font-weight: bold; margin-right: 6px; }
   .item-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-  .payment-tag {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 11px;
-    margin-bottom: 8px;
-  }
-  .pay-cash { background: rgba(74,255,136,0.15); color: var(--prep); }
-  .pay-card { background: rgba(74,158,255,0.15); color: var(--new); }
-
-  .action-btn {
-    width: 100%;
-    padding: 10px;
-    border: none;
+  .check-btn {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
-    font-size: 14px;
-    font-weight: bold;
+    border: 2px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 16px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .check-btn.checked {
+    background: var(--prep);
+    border-color: var(--prep);
+    color: #000;
+  }
+
+  .done-btn {
+    width: 100%;
+    border: none;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    background: #2a4a2a;
+    color: var(--prep);
     transition: opacity 0.2s;
   }
-  .btn-start { background: var(--new); color: #000; }
-  .btn-done { background: var(--prep); color: #000; }
-  .btn-clear { background: #333; color: var(--muted); }
-  .action-btn:hover { opacity: 0.85; }
+  .done-btn:hover { opacity: 0.85; }
+  .done-btn.is-done { background: var(--done); color: #000; }
 
-  .empty-col {
+  .empty-board {
     text-align: center;
     color: var(--muted);
-    padding: 40px 20px;
-    font-size: 14px;
+    padding: 60px 20px;
+    font-size: 16px;
+    grid-column: 1 / -1;
   }
 
-  .col-count {
+  .total-count {
     background: #333;
     color: white;
     border-radius: 10px;
-    padding: 2px 8px;
-    font-size: 12px;
+    padding: 2px 10px;
+    font-size: 13px;
+    margin-left: 10px;
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">🍲 KITCHEN</div>
+  <div class="logo">🍲 KITCHEN <span class="total-count" id="totalCount">0</span></div>
   <div class="section-filter">
     <button class="filter-btn active" onclick="setSection('ALL')">ALL</button>
     <button class="filter-btn" onclick="setSection('Soon-Tofu')">Soon-Tofu</button>
@@ -195,29 +199,7 @@
   <div class="clock" id="clock">--:--</div>
 </header>
 
-<div class="columns">
-  <div class="column">
-    <div class="col-header">
-      <div><span class="col-dot" style="background:#4a9eff"></span>NEW</div>
-      <span class="col-count" id="countNew">0</span>
-    </div>
-    <div id="colNew"></div>
-  </div>
-  <div class="column">
-    <div class="col-header">
-      <div><span class="col-dot" style="background:#4aff88"></span>PREPARING</div>
-      <span class="col-count" id="countPrep">0</span>
-    </div>
-    <div id="colPrep"></div>
-  </div>
-  <div class="column">
-    <div class="col-header">
-      <div><span class="col-dot" style="background:#ffb84a"></span>DONE</div>
-      <span class="col-count" id="countDone">0</span>
-    </div>
-    <div id="colDone"></div>
-  </div>
-</div>
+<div class="board" id="board"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -236,15 +218,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Section filter
-const SECTION_ITEMS = {
-  "Soon-Tofu": ["st1","st2","st3","st4","st5","st6","st7"],
-  "Grill": ["gr1","gr2","gr3","gr4","gr5","gr6","gr7","gr8","gr9","gr10","gr11","gr12","gr13","gr14","gr15"],
-  "Fryer": ["fr1","fr2","fr3","fr4","fr5","fr6","fr7","fr8","fr9"]
-};
-
 let currentSection = 'ALL';
-let allOrders = {};
+let allItems = {};
 
 window.setSection = function(sec) {
   currentSection = sec;
@@ -263,7 +238,7 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
-// Timer
+// Timer helpers
 function getTimerClass(ms) {
   const mins = ms / 60000;
   if (mins < 5) return 'timer-green';
@@ -279,97 +254,103 @@ function formatTimer(ms) {
 // Firebase listener
 const ordersRef = ref(db, 'orderItems');
 onValue(ordersRef, snap => {
-  allOrders = snap.val() || {};
+  allItems = snap.val() || {};
   render();
 });
- 
-function filterSection(order) {
-  if (currentSection === 'ALL') return true;
-  return order.section === currentSection;
+
+function groupByOrder() {
+  const groups = {};
+  Object.entries(allItems).forEach(([key, item]) => {
+    if (!['NEW','PREPARING','DONE'].includes(item.status)) return;
+    const oid = item.orderId || key;
+    if (!groups[oid]) groups[oid] = { orderId: oid, table: item.table, createdAt: item.createdAt, items: [] };
+    groups[oid].items.push({ key, ...item });
+    if (item.createdAt < groups[oid].createdAt) groups[oid].createdAt = item.createdAt;
+  });
+  // drop fully-done groups
+  return Object.values(groups).filter(g => g.items.some(it => it.status !== 'DONE'));
+}
+
+function groupContainsSection(group, section) {
+  if (section === 'ALL') return true;
+  return group.items.some(it => it.section === section);
 }
 
 function render() {
   const now = Date.now();
-  const cols = { NEW: [], PREPARING: [], DONE: [] };
+  const board = document.getElementById('board');
+  const groups = groupByOrder().filter(g => groupContainsSection(g, currentSection));
 
-  Object.entries(allOrders).forEach(([key, order]) => {
-    if (!filterSection(order)) return;
-    if (!['NEW','PREPARING','DONE'].includes(order.status)) return;
-    cols[order.status].push({ key, order });
-  });
+  document.getElementById('totalCount').textContent = groups.length;
 
-  ['NEW','PREPARING','DONE'].forEach(status => {
-    const colId = status === 'NEW' ? 'colNew' : status === 'PREPARING' ? 'colPrep' : 'colDone';
-    const countId = status === 'NEW' ? 'countNew' : status === 'PREPARING' ? 'countPrep' : 'countDone';
-    const col = document.getElementById(colId);
-    const list = cols[status] || [];
+  if (groups.length === 0) {
+    board.innerHTML = `<div class="empty-board">No active orders</div>`;
+    return;
+  }
 
-    document.getElementById(countId).textContent = list.length;
+  groups.sort((a,b) => a.createdAt - b.createdAt);
 
-    if (list.length === 0) {
-      col.innerHTML = `<div class="empty-col">No orders</div>`;
-      return;
-    }
+  board.innerHTML = '';
+  groups.forEach(group => {
+    const elapsed = now - group.createdAt;
+    const timerClass = getTimerClass(elapsed);
+    const isUrgent = timerClass === 'timer-red';
 
-    col.innerHTML = '';
-    list.sort((a,b) => a.order.createdAt - b.order.createdAt).forEach(({ key, order }) => {
-      const elapsed = now - order.createdAt;
-      const card = document.createElement('div');
-      card.className = `order-card status-${order.status}${(order.requested || order.note) ? ' requested' : ''}`;
+    const isCounter = group.table === 'COUNTER' || group.table === 'counter';
+    const headerClass = isCounter ? 'header-counter' : 'header-table';
+    const tableLabel = isCounter ? 'COUNTER' : `Table ${group.table}`;
 
-      let actionBtn = '';
-      if (order.status === 'NEW') {
-        actionBtn = `
-          <button class="action-btn btn-start" onclick="updateStatus('${key}', 'PREPARING')">▶ START</button>
-          <button class="action-btn" style="margin-top:6px;background:${order.requested ? '#ff4a4a' : '#444'};color:white" onclick="toggleRequest('${key}', ${!!order.requested})">⚡ REQUEST</button>
-        `;
-      } else if (order.status === 'PREPARING') {
-        actionBtn = `
-          <button class="action-btn btn-done" onclick="updateStatus('${key}', 'DONE')">✓ DONE</button>
-          <button class="action-btn" style="margin-top:6px;background:${order.requested ? '#ff4a4a' : '#444'};color:white" onclick="toggleRequest('${key}', ${!!order.requested})">⚡ REQUEST</button>
-        `;
-      } else {
-        actionBtn = `
-          <button class="action-btn btn-done" style="margin-bottom:6px" onclick="updateStatus('${key}', 'PREPARING')">↩ RECALL</button>
-          <button class="action-btn btn-clear" onclick="clearOrder('${key}')">✕ CLEAR</button>
-        `;
-      }
-      const timerClass = getTimerClass(elapsed);
-      const timerStr = formatTimer(elapsed);
+    // overall group status: PREPARING if any item NEW or PREPARING but not all NEW... 
+    // rule: if any item is PREPARING -> group acts as PREPARING (done btn visible/active)
+    const allDone = group.items.every(it => it.status === 'DONE');
 
-card.innerHTML = `
-        <div class="card-header">
-          <div class="table-num">Table ${order.table}</div>
-          <span class="timer ${timerClass}">${timerStr}</span>
-        </div>
-        <div class="order-items">
-          <div class="order-item">
-            <span class="item-qty">${order.qty}×</span>${order.name}
-            ${Object.entries(order.options || {}).map(([k,v]) => `<div class="item-sub">${k}: ${v}</div>`).join('')}
-            ${order.note ? `<div class="item-sub">📝 ${order.note}</div>` : ''}
+    const itemsHtml = group.items.map(it => {
+      const highlight = currentSection !== 'ALL' && it.section === currentSection;
+      const checked = it.status !== 'NEW'; // PREPARING or DONE => checked
+      return `
+        <div class="order-item ${highlight ? 'highlight' : ''}">
+          <div class="item-main">
+            <span class="item-qty">${it.qty}×</span>${it.name}
+            ${it.note ? `<div class="item-sub">📝 ${it.note}</div>` : ''}
+            <div class="item-sub">${it.section || ''}</div>
           </div>
+          <button class="check-btn ${checked ? 'checked' : ''}" onclick="toggleItem('${it.key}','${it.status}')">${checked ? '✓' : ''}</button>
         </div>
-        ${actionBtn}
       `;
-      col.appendChild(card);
-    });
+    }).join('');
+
+    const card = document.createElement('div');
+    card.className = `order-card ${isUrgent ? 'urgent' : ''}`;
+    card.innerHTML = `
+      <div class="card-header ${headerClass}">
+        <div>
+          <div class="table-num">${tableLabel}</div>
+          <div class="table-sub">Order ${group.orderId.slice(-6)}</div>
+        </div>
+        <span class="timer ${timerClass}">${formatTimer(elapsed)}</span>
+      </div>
+      <div class="order-items">${itemsHtml}</div>
+      <button class="done-btn ${allDone ? 'is-done' : ''}" onclick="completeGroup(${JSON.stringify(group.items.map(it=>it.key))})">
+        ${allDone ? '✓ COMPLETED' : 'DONE ✓'}
+      </button>
+    `;
+    board.appendChild(card);
   });
 }
 
-// Update timer every second
+// Refresh timers periodically
 setInterval(() => render(), 5000);
 
-window.updateStatus = async function(key, newStatus) {
+window.toggleItem = async function(key, currentStatus) {
+  const newStatus = currentStatus === 'NEW' ? 'PREPARING' : 'NEW';
   await update(ref(db, `orderItems/${key}`), { status: newStatus });
 };
 
-window.clearOrder = async function(key) {
-  await remove(ref(db, `orderItems/${key}`));
+window.completeGroup = async function(keys) {
+  const updates = {};
+  keys.forEach(k => { updates[`orderItems/${k}/status`] = 'DONE'; });
+  await update(ref(db), updates);
 };
-window.toggleRequest = async function(key, current) {
-  await update(ref(db, `orderItems/${key}`), { requested: !current });
-};
- 
 </script>
 </body>
 </html>
