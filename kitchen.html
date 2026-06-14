@@ -135,30 +135,32 @@
   .item-qty { color: var(--new); font-weight: bold; margin-right: 6px; }
   .item-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-  .check-btn {
-    flex-shrink: 0;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: 2px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s;
+   .order-item.item-done {
+    background: #b9d9a8;
+    color: #143;
+    margin: 0 -14px;
+    padding: 8px 14px;
   }
-  .check-btn.checked {
-    background: var(--prep);
-    border-color: var(--prep);
-    color: #000;
+  .order-item.item-done .item-sub { color: #2a5a2a; }
+
+  .order-item.item-preparing {
+    background: #ffe3a8;
+    color: #432;
+    margin: 0 -14px;
+    padding: 8px 14px;
   }
-  .check-btn.held {
-    background: var(--hold);
-    border-color: var(--hold);
-    color: #000;
+  .order-item.item-preparing .item-sub { color: #5a4a2a; }
+
+  .order-item.item-hold {
+    background: #b07aff;
+    color: #fff;
+    margin: 0 -14px;
+    padding: 8px 14px;
+  }
+  .order-item.item-hold .item-sub { color: #f0e6ff; }
+
+  .order-item.item-requested {
+    box-shadow: inset 0 0 0 2px var(--red);
   }
   .order-item.item-checked {
     background: rgba(74,255,136,0.18);
