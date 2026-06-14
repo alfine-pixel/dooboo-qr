@@ -469,6 +469,12 @@ window.deleteItem = async function(key) {
 };
 
 window.completeGroup = async function(keys) {
+  // Optimistic update: remove from local data and re-render immediately
+  keys.forEach(k => {
+    if (allItems[k]) allItems[k] = { ...allItems[k], status: 'DONE' };
+  });
+  render();
+
   const updates = {};
   keys.forEach(k => { updates[`orderItems/${k}/status`] = 'DONE'; });
   await update(ref(db), updates);
