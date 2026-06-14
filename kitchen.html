@@ -423,7 +423,15 @@ function render() {
   const board = document.getElementById('board');
   const groups = groupByOrder().filter(g => groupContainsSection(g, currentSection));
 
-  document.getElementById('totalCount').textContent = groups.length;
+  let itemCount = 0;
+  groups.forEach(g => {
+    if (currentSection === 'ALL') {
+      itemCount += g.items.length;
+    } else {
+      itemCount += g.items.filter(it => it.section === currentSection).length;
+    }
+  });
+  document.getElementById('totalCount').textContent = `${groups.length} (${itemCount})`;
 
   if (groups.length === 0) {
     board.innerHTML = `<div class="empty-board">No active orders</div>`;
