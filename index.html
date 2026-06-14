@@ -456,6 +456,13 @@ const MENU = {
     { id: "fr9", name: "Sausage Tteok Gangjeong", subtitle: "소세지 떡강정", desc: "Sweet and savory glazed sausage and rice cake skewers", price: 10.8, spicy: false, popular: false, image: "", options: {} },
   ]
 };
+
+const SECTION_IMAGE = {
+  "Soon-Tofu": "https://images.unsplash.com/photo-1583224994294-9b1f4c5f1bc6?w=200&h=200&fit=crop",
+  "Grill": "https://images.unsplash.com/photo-1544025162-d76694265947?w=200&h=200&fit=crop",
+  "Fryer": "https://images.unsplash.com/photo-1562967914-608f82629710?w=200&h=200&fit=crop"
+};
+ 
 // State
 let cart = [];
 let currentItem = null;
@@ -506,7 +513,7 @@ Object.entries(MENU).forEach(([section, items], idx) => {
         <div class="item-subtitle">${subtitle}${item.desc || ''}</div>
         <div class="item-price">$${item.price.toFixed(2)}${spice}</div>
       </div>
-      ${item.image ? `<img class="item-image" src="${item.image}" alt="${item.name}">` : `<div class="item-image"></div>`}
+      <img class="item-image" src="${item.image || SECTION_IMAGE[section]}" alt="${item.name}">
     `;
     div.onclick = () => openItemModal(item);
     list.appendChild(div);
