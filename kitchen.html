@@ -503,14 +503,17 @@ function render() {
 
 function adjustLayout() {
   const board = document.getElementById('board');
-  const targetW = 1350;
-  const targetH = 700;
+  const pager = document.getElementById('pagerContainer');
+  const targetW = 1280;
+  const targetH = 760;
   const scaleX = window.innerWidth / targetW;
   const scaleY = window.innerHeight / targetH;
   const scale = Math.min(scaleX, scaleY);
   board.style.transform = `scale(${scale})`;
   board.style.transformOrigin = 'top left';
   board.style.width = targetW + 'px';
+  board.style.height = targetH + 'px';
+  board.style.marginBottom = (targetH * scale - targetH) + 'px';
 }
 window.addEventListener('resize', adjustLayout);
 
