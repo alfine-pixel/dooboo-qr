@@ -326,7 +326,11 @@
 </header>
 
 <div class="board" id="board"></div>
-
+<div id="pagerContainer" style="display:flex; justify-content:center; gap:12px; padding:8px;">
+  <button class="filter-btn" onclick="changePage(-1)">◀ Prev</button>
+  <span id="pageInfo" style="color:white; align-self:center;"></span>
+  <button class="filter-btn" onclick="changePage(1)">Next ▶</button>
+</div>
 <div id="modalContainer"></div>
 
 <script type="module">
@@ -348,6 +352,8 @@ const db = getDatabase(app);
 
 let currentSection = 'ALL';
 let allItems = {};
+let currentPage = 0;
+const CARDS_PER_PAGE = 6;
 
 window.setSection = function(sec) {
   console.log('setSection called:', sec);
@@ -358,6 +364,11 @@ window.setSection = function(sec) {
   render();
 };
 
+window.changePage = function(delta) {
+  currentPage += delta;
+  render();
+};
+ 
 // Clock
 function updateClock() {
   const now = new Date();
@@ -406,6 +417,7 @@ function groupContainsSection(group, section) {
 }
 
 function render() {
+
   const now = Date.now();
   const board = document.getElementById('board');
   const groups = groupByOrder().filter(g => groupContainsSection(g, currentSection));
@@ -417,10 +429,20 @@ function render() {
     return;
   }
 
-  groups.sort((a,b) => a.createdAt - b.createdAt);
+ groups.sort((a,b) => a.createdAt - b.createdAt);
+
+  const totalPages = Math.max(1, Math.ceil(groups.length / CARDS_PER_PAGE));
+  if (currentPage >= totalPages) currentPage = totalPages - 1;
+  if (currentPage < 0) currentPage = 0;
+  const pageGroups = groups.slice(currentPage * CARDS_PER_PAGE, (currentPage + 1) * CARDS_PER_PAGE);
+
+  document.getElementById('pageInfo').textContent = `${currentPage + 1} / ${totalPages}`;
+
+ 
+ 
 
   board.innerHTML = '';
-  groups.forEach(group => {
+  pageGroups.forEach(group => {
     const elapsed = now - group.createdAt;
     const timerClass = getTimerClass(elapsed);
     const isUrgent = timerClass === 'timer-red' || group.items.some(it => it.status === 'REQUEST');
@@ -474,7 +496,22 @@ function render() {
     `;
     board.appendChild(card);
   });
+
+  adjustLayout();
+}  // ← render() 함수가 여기서 끝남
+
+function adjustLayout() {
+  const board = document.getElementById('board');
+  const targetW = 1350;
+  const targetH = 700;
+  const scaleX = window.innerWidth / targetW;
+  const scaleY = window.innerHeight / targetH;
+  const scale = Math.min(scaleX, scaleY);
+  board.style.transform = `scale(${scale})`;
+  board.style.transformOrigin = 'top left';
+  board.style.width = targetW + 'px';
 }
+window.addEventListener('resize', adjustLayout);
 
 // Refresh timers periodically
 setInterval(() => render(), 5000);
