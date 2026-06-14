@@ -408,7 +408,7 @@ function render() {
         <span class="timer ${timerClass}">${formatTimer(elapsed)}</span>
       </div>
       <div class="order-items">${itemsHtml}</div>
-      <button class="done-btn ${allDone ? 'is-done' : ''}" onclick="completeGroup(${JSON.stringify(group.items.map(it=>it.key))})">
+      <button class="done-btn ${allDone ? 'is-done' : ''}" onclick='completeGroup(${JSON.stringify(group.items.map(it=>it.key))})'>
         ${allDone ? '✓ COMPLETED' : 'DONE ✓'}
       </button>
     `;
