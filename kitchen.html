@@ -138,22 +138,18 @@
 
    .order-item.item-done {
     background: #b9d9a8;
-    color: #143;
     margin: 0 -14px;
     padding: 8px 14px;
     border-left-color: #5a9a4a;
   }
-  .order-item.item-done .item-sub { color: #2a5a2a; }
-
-  .order-item.item-preparing {
+  
+   .order-item.item-preparing {
     background: #ffe3a8;
-    color: #432;
     margin: 0 -14px;
     padding: 8px 14px;
     border-left-color: #d4a040;
   }
-  .order-item.item-preparing .item-sub { color: #5a4a2a; }
-
+  
   .order-item.item-hold {
     background: #a87bff;
     margin: 0 -14px;
@@ -170,11 +166,11 @@
  
   .order-item.item-requested {
     background: #aee0ff;
-    color: #034;
     margin: 0 -14px;
     padding: 8px 14px;
     border-left-color: #2a8acc;
   }
+ 
   .order-item.item-requested .item-sub { color: #8a3a3a; }
   .order-item.item-checked {
     background: rgba(74,255,136,0.18);
@@ -418,7 +414,7 @@ function render() {
           <div class="item-main">
             <span class="item-qty">${it.qty}×</span>${it.name}
             ${it.note ? `<div class="item-sub">📝 ${it.note}</div>` : ''}
-            <div class="item-sub">${it.section || ''}${it.status === 'HOLD' ? ' · HOLD' : ''}${it.requested ? ' · ⚡REQUEST' : ''}</div>
+            <div class="item-sub">${it.section || ''}${it.status === 'DONE' ? ' · COMPLETED' : ''}${it.status === 'PREPARING' ? ' · PREPARING' : ''}${it.status === 'HOLD' ? ' · HOLD' : ''}${it.status === 'RECOOK' ? ' · RECOOK' : ''}${it.requested ? ' · ⚡REQUEST' : ''}</div>
           </div>
         </div>
       `;
