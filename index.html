@@ -405,6 +405,7 @@ import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
+ 
   apiKey: "AIzaSyAwSCTrTUhhCZfhoI5YOu3ab0qB8N4Nq8g",
   authDomain: "dooboo-qr.firebaseapp.com",
   databaseURL: "https://dooboo-qr-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -415,6 +416,10 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+signInAnonymously(auth).catch((error) => {
+  console.error("익명 로그인 실패:", error);
+});
 const db = getDatabase(app);
 
 // Menu Data
